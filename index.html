@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hormonal Diary — Dashboard Premium</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --rosa:        #FADADD;
+    --rosa-m:      #F4A7B9;
+    --rosa-d:      #D4607A;
+    --lila:        #EDE0F7;
+    --lila-m:      #C9A8E0;
+    --lila-d:      #8B5DB8;
+    --durazno:     #FDEBD0;
+    --durazno-m:   #F0B98A;
+    --durazno-d:   #C47940;
+    --crema:       #FFF9F4;
+    --beige:       #F5F0EB;
+    --beige-m:     #DDD0C4;
+    --beige-d:     #A08A78;
+    --menta:       #DFF0E8;
+    --menta-d:     #5E9E80;
+    --text:        #3D2433;
+    --text-s:      #7C5A6A;
+    --text-xs:     #B09AA8;
+    --white:       #FFFFFF;
+    --sh:          rgba(61,36,51,0.07);
+    --sh-m:        rgba(61,36,51,0.14);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--crema);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  body::before {
+    content:'';
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(ellipse 70% 55% at 5% 15%,  rgba(244,167,185,.35) 0%, transparent 65%),
+      radial-gradient(ellipse 60% 70% at 95% 85%,  rgba(201,168,224,.3)  0%, transparent 65%),
+      radial-gradient(ellipse 50% 40% at 50% 50%,  rgba(240,185,138,.2)  0%, transparent 70%);
+  }
+
+  .wrap { position:relative; z-index:1; max-width:1160px; margin:0 auto; padding:20px 18px 48px; }
+
+  /* ── HEADER ── */
+  .hdr { text-align:center; padding:44px 16px 32px; }
+  .hdr-pill {
+    display:inline-flex; align-items:center; gap:6px;
+    background:var(--rosa); color:var(--rosa-d);
+    font-size:10px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase;
+    padding:5px 16px; border-radius:20px; margin-bottom:14px;
+  }
+  .hdr h1 {
+    font-family:'Cormorant Garamond',serif;
+    font-size:clamp(34px,5.5vw,58px); line-height:1.05;
+    color:var(--text); margin-bottom:10px;
+  }
+  .hdr h1 em { color:var(--rosa-d); font-style:italic; }
+  .hdr p { font-size:13px; color:var(--text-s); font-weight:300; letter-spacing:.4px; }
+
+  /* ── CONFIG PANEL ── */
+  .cfg {
+    background:var(--white); border-radius:22px;
+    padding:24px 28px; margin-bottom:22px;
+    box-shadow:0 2px 18px var(--sh);
+  }
+  .sec-lbl {
+    font-size:11px; font-weight:600; letter-spacing:1.8px; text-transform:uppercase;
+    color:var(--text-s); margin-bottom:14px;
+  }
+  .cfg-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px; }
+  .cfg-item label { display:block; font-size:11px; color:var(--text-xs); margin-bottom:5px; font-weight:500; }
+  .cfg-item input {
+    width:100%; border:1.5px solid var(--beige-m); border-radius:11px;
+    padding:9px 13px; font-family:'Plus Jakarta Sans',sans-serif;
+    font-size:13px; color:var(--text); background:var(--crema);
+    outline:none; transition:border-color .2s;
+  }
+  .cfg-item input:focus { border-color:var(--lila-m); background:var(--white); }
+  .upd-btn {
+    margin-top:16px; background:linear-gradient(135deg,var(--rosa-d),var(--lila-d));
+    color:#fff; border:none; border-radius:12px; padding:10px 26px;
+    font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; font-weight:600;
+    cursor:pointer; letter-spacing:.4px; transition:opacity .2s,transform .15s;
+  }
+  .upd-btn:hover { opacity:.9; transform:translateY(-1px); }
+
+  /* ── PHASE BANNER ── */
+  .phase-banner {
+    border-radius:22px; padding:26px 32px;
+    margin-bottom:22px; display:flex; align-items:center; gap:20px;
+    box-shadow:0 4px 24px var(--sh-m); position:relative; overflow:hidden;
+    transition:background .5s;
+  }
+  .phase-banner::after {
+    content:''; position:absolute; right:-40px; top:-40px;
+    width:200px; height:200px; border-radius:50%;
+    background:rgba(255,255,255,.18); pointer-events:none;
+  }
+  .ph-icon { font-size:52px; flex-shrink:0; }
+  .ph-info h2 { font-family:'Cormorant Garamond',serif; font-size:24px; margin-bottom:4px; }
+  .ph-info p { font-size:13px; opacity:.8; font-weight:300; max-width:480px; }
+  .ph-day { margin-left:auto; text-align:center; background:rgba(255,255,255,.35); border-radius:16px; padding:12px 22px; flex-shrink:0; }
+  .ph-day .n { font-family:'Cormorant Garamond',serif; font-size:42px; line-height:1; }
+  .ph-day .l { font-size:10px; opacity:.75; letter-spacing:1.5px; text-transform:uppercase; margin-top:2px; }
+
+  /* ── CARDS ── */
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr)); gap:14px; margin-bottom:22px; }
+  .card {
+    background:var(--white); border-radius:18px; padding:20px 16px;
+    box-shadow:0 2px 14px var(--sh); position:relative; overflow:hidden;
+    transition:transform .2s,box-shadow .2s;
+    animation:slideUp .5s ease both;
+  }
+  .card:hover { transform:translateY(-3px); box-shadow:0 7px 26px var(--sh-m); }
+  .card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:3.5px; border-radius:18px 18px 0 0;
+  }
+  .card.r::before { background:linear-gradient(90deg,var(--rosa-d),var(--rosa-m)); }
+  .card.l::before { background:linear-gradient(90deg,var(--lila-d),var(--lila-m)); }
+  .card.d::before { background:linear-gradient(90deg,var(--durazno-d),var(--durazno-m)); }
+  .card.g::before { background:linear-gradient(90deg,var(--menta-d),var(--menta)); }
+  .card-ico { font-size:22px; margin-bottom:10px; }
+  .card-lbl { font-size:10px; color:var(--text-s); letter-spacing:.5px; margin-bottom:7px; font-weight:600; text-transform:uppercase; }
+  .card-val { font-family:'Cormorant Garamond',serif; font-size:28px; color:var(--text); line-height:1; }
+  .card-val.sm { font-size:13px; font-family:'Plus Jakarta Sans',sans-serif; font-weight:500; }
+  .card-sub { font-size:10px; color:var(--text-xs); margin-top:5px; }
+  .badge { display:inline-block; font-size:10px; font-weight:600; padding:3px 9px; border-radius:9px; margin-top:7px; }
+  .badge.ok  { background:var(--menta); color:var(--menta-d); }
+  .badge.warn{ background:var(--durazno); color:var(--durazno-d); }
+  .badge.hot { background:var(--rosa); color:var(--rosa-d); }
+
+  /* ── SECTION TITLE ── */
+  .stitle {
+    font-family:'Cormorant Garamond',serif; font-size:20px; color:var(--text);
+    margin-bottom:14px; display:flex; align-items:center; gap:10px;
+  }
+  .stitle::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,var(--rosa-m),transparent); margin-left:8px; }
+  .sec { margin-bottom:26px; }
+
+  /* ── CYCLE TIMELINE ── */
+  .timeline-box { background:var(--white); border-radius:20px; padding:24px 28px; box-shadow:0 2px 16px var(--sh); }
+  .cycle-track { position:relative; height:56px; border-radius:28px; overflow:hidden; background:var(--beige); margin-bottom:14px; }
+  .seg { position:absolute; top:0; bottom:0; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; letter-spacing:.4px; }
+  .seg.ms { background:linear-gradient(135deg,#E87A98,#F4A7B9); left:0;    width:17.8%; color:#fff; }
+  .seg.fo { background:linear-gradient(135deg,#B8D8FF,#DFF0E8); left:17.8%; width:28.6%; color:var(--text-s); }
+  .seg.ov { background:linear-gradient(135deg,#F0B98A,#FFE4A0); left:46.4%; width:10.7%; color:#fff; }
+  .seg.lu { background:linear-gradient(135deg,#D8C8F0,#EDE0F7); left:57.1%; width:42.9%; color:var(--text-s); }
+  .cursor {
+    position:absolute; top:-5px; bottom:-5px; width:3px;
+    background:var(--text); border-radius:3px; z-index:10;
+    box-shadow:0 0 10px rgba(61,36,51,.4);
+    transition:left .9s cubic-bezier(.34,1.56,.64,1);
+  }
+  .cursor::after { content:'▲'; position:absolute; bottom:-19px; left:50%; transform:translateX(-50%); font-size:9px; color:var(--text); }
+  .tl-labs { display:flex; font-size:10px; color:var(--text-xs); margin-top:22px; }
+  .tl-labs span { flex:1; text-align:center; }
+
+  /* ── CALENDAR ── */
+  .cal-box { background:var(--white); border-radius:20px; padding:24px 28px; box-shadow:0 2px 16px var(--sh); }
+  .cal-nav-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+  .cal-ttl { font-family:'Cormorant Garamond',serif; font-size:20px; }
+  .cal-btn { background:var(--beige); border:none; border-radius:10px; padding:6px 15px; cursor:pointer; font-size:14px; color:var(--text); transition:background .2s; }
+  .cal-btn:hover { background:var(--rosa); }
+  .dow-row { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:6px; }
+  .dow-row span { text-align:center; font-size:10px; color:var(--text-s); font-weight:600; letter-spacing:.5px; text-transform:uppercase; padding:4px 0; }
+  .days-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+  .day {
+    aspect-ratio:1; border-radius:12px; display:flex; align-items:center;
+    justify-content:center; font-size:12px; cursor:default; transition:transform .15s;
+    position:relative;
+  }
+  .day.emp { opacity:0; pointer-events:none; }
+  .day.today { background:var(--text)!important; color:#fff!important; font-weight:600; box-shadow:0 4px 14px rgba(61,36,51,.28); }
+  .day.period    { background:var(--rosa); color:var(--text); font-weight:500; }
+  .day.fertile   { background:var(--lila-m); color:#fff; }
+  .day.ovulation { background:var(--durazno-d); color:#fff; font-weight:700; box-shadow:0 2px 10px rgba(196,121,64,.4); }
+  .day.luteal    { background:var(--lila); color:var(--text); }
+  .day.folicular { background:var(--menta); color:var(--text); }
+  .day:not(.emp):not(.today):hover { transform:scale(1.12); z-index:2; }
+  .cal-legend { display:flex; gap:14px; flex-wrap:wrap; margin-top:16px; padding-top:16px; border-top:1px solid var(--beige); }
+  .leg-i { display:flex; align-items:center; gap:5px; font-size:10px; color:var(--text-s); }
+  .leg-dot { width:11px; height:11px; border-radius:3px; flex-shrink:0; }
+
+  /* ── TWO COL ── */
+  .two { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:26px; }
+  @media(max-width:680px) { .two { grid-template-columns:1fr; } }
+
+  /* ── CHART BOX ── */
+  .cbox { background:var(--white); border-radius:20px; padding:24px 26px; box-shadow:0 2px 16px var(--sh); }
+  .cbox-ttl { font-family:'Cormorant Garamond',serif; font-size:16px; margin-bottom:16px; color:var(--text); }
+
+  /* ── MOOD BARS ── */
+  .mbars { display:flex; flex-direction:column; gap:11px; }
+  .mrow { display:flex; align-items:center; gap:10px; font-size:11px; }
+  .mlbl { width:88px; color:var(--text-s); flex-shrink:0; }
+  .mbar-w { flex:1; height:9px; background:var(--beige); border-radius:5px; overflow:hidden; }
+  .mbar { height:100%; border-radius:5px; transition:width 1.1s cubic-bezier(.34,1.56,.64,1); }
+  .mpct { width:34px; text-align:right; color:var(--text-xs); font-size:10px; }
+
+  /* ── TAGS ── */
+  .tags { display:flex; flex-wrap:wrap; gap:7px; }
+  .tag { padding:5px 12px; border-radius:18px; font-size:11px; font-weight:500; transition:transform .15s; }
+  .tag:hover { transform:scale(1.06); }
+  .tag.r { background:var(--rosa); color:var(--rosa-d); }
+  .tag.l { background:var(--lila); color:var(--lila-d); }
+  .tag.d { background:var(--durazno); color:var(--durazno-d); }
+  .tag.g { background:var(--menta); color:var(--menta-d); }
+
+  /* ── GAUGE SVG ── */
+  .gauge-wrap { display:flex; flex-direction:column; align-items:center; padding:10px 0; }
+  .gauge-ttl { font-family:'Cormorant Garamond',serif; font-size:15px; text-align:center; margin-top:8px; }
+  .gauge-sub { font-size:10px; color:var(--text-s); text-align:center; }
+
+  /* ── MINI STATS ── */
+  .mstats { display:flex; flex-direction:column; gap:10px; }
+  .mstat { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-radius:12px; }
+  .mstat span:first-child { font-size:11px; color:var(--text-s); }
+  .mstat span:last-child { font-family:'Cormorant Garamond',serif; font-size:17px; color:var(--text); }
+
+  /* ── INSIGHT CARDS ── */
+  .insights { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; margin-bottom:26px; }
+  .insight {
+    border-radius:16px; padding:18px 20px;
+    box-shadow:0 2px 12px var(--sh); position:relative; overflow:hidden;
+  }
+  .insight-ico { font-size:26px; margin-bottom:8px; }
+  .insight-lbl { font-size:10px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:var(--text-s); margin-bottom:5px; }
+  .insight-text { font-size:12px; color:var(--text); line-height:1.55; }
+
+  /* ── PHASES GRID ── */
+  .phases { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin-bottom:26px; }
+  .phase-card { border-radius:18px; padding:22px 20px; box-shadow:0 2px 14px var(--sh); }
+  .phase-card .p-ico { font-size:30px; margin-bottom:8px; }
+  .phase-card .p-name { font-family:'Cormorant Garamond',serif; font-size:17px; margin-bottom:4px; }
+  .phase-card .p-days { font-size:10px; color:var(--text-s); margin-bottom:12px; }
+
+  /* ── FOOTER ── */
+  .ftr { text-align:center; padding:24px; color:var(--text-xs); font-size:11px; border-top:1px solid var(--beige); margin-top:14px; }
+  .ftr a { color:var(--rosa-d); text-decoration:none; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes slideUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+  .card:nth-child(1){animation-delay:.04s}.card:nth-child(2){animation-delay:.08s}.card:nth-child(3){animation-delay:.12s}
+  .card:nth-child(4){animation-delay:.16s}.card:nth-child(5){animation-delay:.20s}.card:nth-child(6){animation-delay:.24s}
+  .phase-banner{animation:slideUp .6s ease both;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="hdr-pill">✦ &nbsp;hormonal diary&nbsp; ✦</div>
+    <h1>Mi <em>Diario</em> Hormonal</h1>
+    <p id="date-line">Cargando...</p>
+  </div>
+
+  <!-- CONFIG -->
+  <div class="cfg">
+    <div class="sec-lbl">Mis datos del ciclo</div>
+    <div class="cfg-grid">
+      <div class="cfg-item"><label>Duración del ciclo (días)</label><input type="number" id="cdur" value="28" min="21" max="40"></div>
+      <div class="cfg-item"><label>Duración del período (días)</label><input type="number" id="pdur" value="5" min="2" max="10"></div>
+      <div class="cfg-item"><label>Fecha último período</label><input type="date" id="lstart"></div>
+    </div>
+    <button class="upd-btn" onclick="go()">Actualizar mi ciclo ✨</button>
+  </div>
+
+  <!-- PHASE BANNER -->
+  <div id="banner" class="phase-banner"></div>
+
+  <!-- METRIC CARDS -->
+  <div class="cards">
+    <div class="card r"><div class="card-ico">⏳</div><div class="card-lbl">Próximo período</div><div id="c1" class="card-val">—</div><div class="card-sub">días restantes</div></div>
+    <div class="card l"><div class="card-ico">📅</div><div class="card-lbl">Fecha estimada</div><div id="c2" class="card-val sm">—</div><div class="card-sub">próximo período</div></div>
+    <div class="card d"><div class="card-ico">🥚</div><div class="card-lbl">Ovulación est.</div><div id="c3" class="card-val sm">—</div><div id="c3s" class="card-sub">—</div></div>
+    <div class="card r"><div class="card-ico">🌺</div><div class="card-lbl">Ventana fértil</div><div id="c4" class="card-val sm">—</div><div class="card-sub">inicio → fin</div></div>
+    <div class="card l"><div class="card-ico">🌀</div><div class="card-lbl">Día del ciclo</div><div id="c5" class="card-val">—</div><div class="card-sub">de <span id="c5t">28</span> días</div></div>
+    <div class="card g"><div class="card-ico">💡</div><div class="card-lbl">Alerta</div><div id="c6" class="card-val sm badge ok">—</div></div>
+  </div>
+
+  <!-- CYCLE TIMELINE -->
+  <div class="sec">
+    <div class="stitle">Progreso de tu ciclo actual</div>
+    <div class="timeline-box">
+      <div class="cycle-track">
+        <div class="seg ms">Menstrual</div>
+        <div class="seg fo">Folicular</div>
+        <div class="seg ov">🥚</div>
+        <div class="seg lu">Lútea</div>
+        <div class="cursor" id="cur" style="left:0%"></div>
+      </div>
+      <div class="tl-labs"><span>Día 1</span><span>Día 6</span><span>Día 13</span><span>14</span><span>Día 15</span><span>Día 28</span></div>
+    </div>
+  </div>
+
+  <!-- INSIGHTS -->
+  <div class="sec">
+    <div class="stitle">Insights hormonales</div>
+    <div class="insights" id="insights"></div>
+  </div>
+
+  <!-- CALENDAR -->
+  <div class="sec">
+    <div class="stitle">Calendario menstrual</div>
+    <div class="cal-box">
+      <div class="cal-nav-row">
+        <button class="cal-btn" onclick="cm(-1)">‹</button>
+        <div class="cal-ttl" id="cal-title"></div>
+        <button class="cal-btn" onclick="cm(1)">›</button>
+      </div>
+      <div class="dow-row"><span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sá</span><span>Do</span></div>
+      <div class="days-grid" id="cal"></div>
+      <div class="cal-legend">
+        <div class="leg-i"><div class="leg-dot" style="background:var(--rosa)"></div>Menstrual</div>
+        <div class="leg-i"><div class="leg-dot" style="background:var(--menta)"></div>Folicular</div>
+        <div class="leg-i"><div class="leg-dot" style="background:var(--lila-m)"></div>Fértil</div>
+        <div class="leg-i"><div class="leg-dot" style="background:var(--durazno-d)"></div>Ovulación</div>
+        <div class="leg-i"><div class="leg-dot" style="background:var(--lila)"></div>Lútea</div>
+        <div class="leg-i"><div class="leg-dot" style="background:var(--text)"></div>Hoy</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TWO COLUMNS -->
+  <div class="two">
+    <!-- MOOD + TAGS -->
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="cbox">
+        <div class="cbox-ttl">Síntomas más comunes (simulados)</div>
+        <div class="mbars">
+          <div class="mrow"><div class="mlbl">Fatiga</div><div class="mbar-w"><div class="mbar" id="b1" style="width:0%;background:linear-gradient(90deg,var(--rosa-d),var(--rosa-m))"></div></div><div class="mpct">72%</div></div>
+          <div class="mrow"><div class="mlbl">Cólicos</div><div class="mbar-w"><div class="mbar" id="b2" style="width:0%;background:linear-gradient(90deg,var(--lila-d),var(--lila-m))"></div></div><div class="mpct">58%</div></div>
+          <div class="mrow"><div class="mlbl">Hinchazón</div><div class="mbar-w"><div class="mbar" id="b3" style="width:0%;background:linear-gradient(90deg,var(--durazno-d),var(--durazno-m))"></div></div><div class="mpct">45%</div></div>
+          <div class="mrow"><div class="mlbl">Ansiedad</div><div class="mbar-w"><div class="mbar" id="b4" style="width:0%;background:linear-gradient(90deg,var(--rosa-d),var(--lila-m))"></div></div><div class="mpct">61%</div></div>
+          <div class="mrow"><div class="mlbl">Antojos</div><div class="mbar-w"><div class="mbar" id="b5" style="width:0%;background:linear-gradient(90deg,var(--durazno-d),var(--menta))"></div></div><div class="mpct">80%</div></div>
+          <div class="mrow"><div class="mlbl">Acné</div><div class="mbar-w"><div class="mbar" id="b6" style="width:0%;background:linear-gradient(90deg,var(--lila-d),var(--rosa-m))"></div></div><div class="mpct">38%</div></div>
+        </div>
+      </div>
+      <div class="cbox">
+        <div class="cbox-ttl">Estado de hoy</div>
+        <div class="tags" id="tagsbox"></div>
+      </div>
+    </div>
+
+    <!-- FERTILITY + MINI STATS -->
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="cbox">
+        <div class="cbox-ttl">Fertilidad actual</div>
+        <div class="gauge-wrap">
+          <svg width="170" height="95" viewBox="0 0 170 95">
+            <defs>
+              <linearGradient id="gg" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#E87A98"/>
+                <stop offset="50%" stop-color="#C9A8E0"/>
+                <stop offset="100%" stop-color="#F0B98A"/>
+              </linearGradient>
+            </defs>
+            <path d="M12 85 A73 73 0 0 1 158 85" fill="none" stroke="#F0EBE8" stroke-width="13" stroke-linecap="round"/>
+            <path id="garc" d="M12 85 A73 73 0 0 1 158 85" fill="none" stroke="url(#gg)" stroke-width="13" stroke-linecap="round" stroke-dasharray="230" stroke-dashoffset="230" style="transition:stroke-dashoffset 1.3s cubic-bezier(.34,1.56,.64,1)"/>
+            <line id="needle" x1="85" y1="85" x2="85" y2="22" stroke="var(--text)" stroke-width="2.5" stroke-linecap="round" style="transform-origin:85px 85px;transition:transform 1.2s ease"/>
+            <circle cx="85" cy="85" r="5" fill="var(--text)"/>
+            <text id="gpct" x="85" y="72" text-anchor="middle" font-size="14" font-family="Cormorant Garamond,serif" fill="var(--text)">—%</text>
+          </svg>
+          <div class="gauge-ttl" id="glbl">Calculando...</div>
+          <div class="gauge-sub" id="gsub"></div>
+        </div>
+      </div>
+      <div class="cbox">
+        <div class="cbox-ttl">Resumen del ciclo</div>
+        <div class="mstats">
+          <div class="mstat" style="background:var(--rosa)"><span>Duración ciclo</span><span id="s1">28 días</span></div>
+          <div class="mstat" style="background:var(--lila)"><span>Duración período</span><span id="s2">5 días</span></div>
+          <div class="mstat" style="background:var(--durazno)"><span>Día ovulación</span><span id="s3">Día 14</span></div>
+          <div class="mstat" style="background:var(--menta)"><span>Días fértiles</span><span id="s4">~6 días</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE GUIDE -->
+  <div class="sec">
+    <div class="stitle">Tu mapa hormonal</div>
+    <div class="phases">
+      <div class="phase-card" style="background:var(--rosa)">
+        <div class="p-ico">🔴</div>
+        <div class="p-name">Menstrual</div>
+        <div class="p-days">Días 1–5 · Descanso sagrado</div>
+        <div class="tags"><span class="tag r">Descanso</span><span class="tag r">Calor</span><span class="tag r">Jengibre</span></div>
+      </div>
+      <div class="phase-card" style="background:var(--menta)">
+        <div class="p-ico">🌱</div>
+        <div class="p-name">Folicular</div>
+        <div class="p-days">Días 6–13 · Energía y creatividad</div>
+        <div class="tags"><span class="tag g">Proyectos</span><span class="tag g">Cardio</span><span class="tag g">Social</span></div>
+      </div>
+      <div class="phase-card" style="background:var(--durazno)">
+        <div class="p-ico">🥚</div>
+        <div class="p-name">Ovulación</div>
+        <div class="p-days">Día ~14 · Máxima vitalidad</div>
+        <div class="tags"><span class="tag d">Fertilidad</span><span class="tag d">Poder</span><span class="tag d">Carisma</span></div>
+      </div>
+      <div class="phase-card" style="background:var(--lila)">
+        <div class="p-ico">🌙</div>
+        <div class="p-name">Lútea</div>
+        <div class="p-days">Días 15–28 · Intuición profunda</div>
+        <div class="tags"><span class="tag l">Journal</span><span class="tag l">Pilates</span><span class="tag l">Magnesio</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ftr">
+    Hecho con amor 🌸 · <strong>Hormonal Diary</strong> · Tu sistema premium de bienestar femenino<br>
+    <span style="font-size:10px;margin-top:6px;display:block;">Herramienta de bienestar personal · No es un dispositivo médico · Consulta siempre con tu ginecóloga 💙</span>
+  </div>
+
+</div>
+<script>
+const MES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const DIAS = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+
+let CAL_V = new Date();
+let DATA = { dur:28, pdur:5, last:null };
+
+// Default: last period 12 days ago
+const def = new Date(); def.setDate(def.getDate()-12);
+document.getElementById('lstart').value = def.toISOString().slice(0,10);
+
+function fmt(d) { return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; }
+
+function go() {
+  const dur  = parseInt(document.getElementById('cdur').value)  || 28;
+  const pdur = parseInt(document.getElementById('pdur').value)  || 5;
+  const ls   = document.getElementById('lstart').value;
+  if (!ls) { alert('Ingresa la fecha de tu último período'); return; }
+
+  DATA.dur  = dur;
+  DATA.pdur = pdur;
+  DATA.last = new Date(ls + 'T00:00:00');
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const next  = new Date(DATA.last); next.setDate(next.getDate() + dur);
+  const ovul  = new Date(next); ovul.setDate(ovul.getDate() - 14);
+  const fstart= new Date(ovul); fstart.setDate(fstart.getDate() - 3);
+  const fend  = new Date(ovul); fend.setDate(fend.getDate() + 3);
+
+  const dtn   = Math.round((next - today) / 864e5);
+  const cd    = Math.round((today - DATA.last) / 864e5) + 1;
+  const cdCl  = Math.min(Math.max(cd,1), dur);
+
+  // Date line
+  const dow = today.getDay();
+  document.getElementById('date-line').textContent =
+    `${DIAS[dow===0?6:dow-1]}, ${today.getDate()} de ${MES[today.getMonth()]} ${today.getFullYear()}`;
+
+  // Phase
+  let pName, pIco, pColor, pDesc, pTags, pTagCls;
+  if (cdCl <= pdur) {
+    pName='Fase Menstrual'; pIco='🔴'; pColor='#FADADD';
+    pDesc='Tiempo sagrado de descanso, introspección y autocuidado profundo. Tu cuerpo hace algo extraordinario.';
+    pTags=['Descanso','Calor','Nutrición']; pTagCls='r';
+  } else if (cdCl <= 13) {
+    pName='Fase Folicular'; pIco='🌱'; pColor='#DFF0E8';
+    pDesc='Energía en ascenso, creatividad floreciente, optimismo natural. El mundo está abierto para ti.';
+    pTags=['Creatividad','Ejercicio','Proyectos']; pTagCls='g';
+  } else if (cdCl <= 16) {
+    pName='Ovulación'; pIco='🥚'; pColor='#FDEBD0';
+    pDesc='Pico de vitalidad, fertilidad y carisma. Estás en tu máximo poder. ¡Brilla con todo!';
+    pTags=['Vitalidad','Fertilidad','Poder']; pTagCls='d';
+  } else {
+    pName='Fase Lútea'; pIco='🌙'; pColor='#EDE0F7';
+    pDesc='Intuición poderosa, sensibilidad elevada. Honra tu necesidad de quietud y autocuidado.';
+    pTags=['Journaling','Calma','Magnesio']; pTagCls='l';
+  }
+
+  const banner = document.getElementById('banner');
+  banner.style.background = `linear-gradient(135deg,${pColor},#fff)`;
+  banner.innerHTML = `
+    <div class="ph-icon">${pIco}</div>
+    <div class="ph-info"><h2>${pName}</h2><p>${pDesc}</p></div>
+    <div class="ph-day"><div class="n">${Math.max(0,cdCl)}</div><div class="l">día del<br>ciclo</div></div>`;
+
+  // Cards
+  document.getElementById('c1').textContent = Math.max(0,dtn);
+  document.getElementById('c2').textContent = fmt(next);
+  document.getElementById('c3').textContent = fmt(ovul);
+  document.getElementById('c3s').textContent = `Día ${dur-14} del ciclo`;
+  document.getElementById('c4').textContent = `${fmt(fstart)} → ${fmt(fend)}`;
+  document.getElementById('c5').textContent = Math.max(0,cdCl);
+  document.getElementById('c5t').textContent = dur;
+
+  const c6 = document.getElementById('c6');
+  if (dtn <= 0) { c6.textContent='🔴 ¡Período aquí!'; c6.className='card-val sm badge hot'; }
+  else if (dtn <= 3) { c6.textContent=`🔔 En ${dtn} días`; c6.className='card-val sm badge hot'; }
+  else if (dtn <= 7) { c6.textContent='💕 Esta semana'; c6.className='card-val sm badge warn'; }
+  else if (today >= fstart && today <= fend) { c6.textContent='🌟 Días fértiles'; c6.className='card-val sm badge ok'; }
+  else { c6.textContent='✅ Todo bien'; c6.className='card-val sm badge ok'; }
+
+  // Cursor
+  const prog = ((cdCl-1)/dur)*100;
+  document.getElementById('cur').style.left = `${Math.min(prog,97)}%`;
+
+  // Stats
+  document.getElementById('s1').textContent = `${dur} días`;
+  document.getElementById('s2').textContent = `${pdur} días`;
+  document.getElementById('s3').textContent = `Día ${dur-14}`;
+
+  // Fertility gauge
+  const dtoOvul = Math.round((ovul-today)/864e5);
+  let fertPct = 5;
+  if (today >= fstart && today <= fend) { fertPct = Math.abs(dtoOvul)<=1 ? 95 : 78; }
+  else if (Math.abs(dtoOvul) <= 5) fertPct = 40;
+  else fertPct = 8;
+
+  const total = 230;
+  document.getElementById('garc').style.strokeDashoffset = total - (fertPct/100)*total;
+  document.getElementById('gpct').textContent = `${fertPct}%`;
+  const angle = -90 + (fertPct/100)*180;
+  document.getElementById('needle').style.transform = `rotate(${angle}deg)`;
+  document.getElementById('glbl').textContent = fertPct > 70 ? 'Alta fertilidad 🌟' : fertPct > 30 ? 'Fertilidad moderada' : 'Baja fertilidad';
+  document.getElementById('gsub').textContent = fertPct > 70 ? 'Estás en tu ventana fértil ✨' : fertPct > 30 ? 'Cerca de días fértiles' : 'Fuera de ventana fértil';
+
+  // Tags
+  const tagMap = {
+    'Fase Menstrual': [['Descanso','r'],['Calor','r'],['Hierro','r'],['Vitamina C','d'],['Yoga suave','g']],
+    'Fase Folicular': [['Energía','g'],['Proyectos','g'],['Proteínas','d'],['Social','l'],['Cardio','g']],
+    'Ovulación':     [['Fertilidad','d'],['Carisma','r'],['Omega-3','g'],['Poder','l'],['HIIT','d']],
+    'Fase Lútea':    [['Magnesio','l'],['Journaling','l'],['Límites','r'],['Pilates','g'],['Menos cafeína','d']],
+  };
+  const tb = document.getElementById('tagsbox');
+  tb.innerHTML = '';
+  (tagMap[pName]||[]).forEach(([t,c])=>{ const s=document.createElement('span'); s.className=`tag ${c}`; s.textContent=t; tb.appendChild(s); });
+
+  // Insights
+  const insData = [
+    { ico:'🍫', lbl:'Antojos', txt: cdCl >= dur-7
+        ? 'Los antojos de azúcar suelen aumentar en la fase lútea. Prueba magnesio y proteínas para reducirlos.'
+        : 'Tus antojos son parte del ciclo. Escucha tu cuerpo con compasión.', bg:'var(--rosa)' },
+    { ico:'⚡', lbl:'Energía', txt: cdCl <= 13 && cdCl > pdur
+        ? '¡Aprovecha esta energía! Estás en tu fase de mayor vitalidad y claridad mental.'
+        : cdCl > 16 ? 'La energía disminuye en la fase lútea. Es normal. Descansa sin culpa.'
+        : 'Tu energía está sincronizada con tus hormonas. Cada fase tiene su ritmo.', bg:'var(--lila)' },
+    { ico:'😴', lbl:'Sueño', txt: cdCl >= dur-5
+        ? 'El sueño puede verse afectado antes del período por la caída de progesterona. Magnesio y rutinas ayudan.'
+        : 'Tu sueño debería ser más estable en esta fase. Sigue registrando para detectar patrones.', bg:'var(--durazno)' },
+    { ico:'💕', lbl:'Emociones', txt: pName==='Fase Lútea'
+        ? 'Tu sensibilidad está elevada. Es normal y poderosa — tu intuición es más aguda que nunca.'
+        : pName==='Ovulación' ? 'Seguridad y carisma en su máximo. ¡Es un buen momento para conectar!'
+        : 'Honra cómo te sientes. Tus emociones son información hormonal, no debilidades.', bg:'var(--menta)' },
+  ];
+  const ig = document.getElementById('insights');
+  ig.innerHTML = '';
+  insData.forEach(({ico,lbl,txt,bg})=>{
+    ig.innerHTML += `<div class="insight" style="background:${bg}"><div class="insight-ico">${ico}</div><div class="insight-lbl">${lbl}</div><div class="insight-text">${txt}</div></div>`;
+  });
+
+  renderCal();
+  animBars();
+}
+
+function animBars() {
+  setTimeout(()=>{
+    document.getElementById('b1').style.width='72%';
+    document.getElementById('b2').style.width='58%';
+    document.getElementById('b3').style.width='45%';
+    document.getElementById('b4').style.width='61%';
+    document.getElementById('b5').style.width='80%';
+    document.getElementById('b6').style.width='38%';
+  }, 350);
+}
+
+function getDayClass(date) {
+  if (!DATA.last) return '';
+  const today = new Date(); today.setHours(0,0,0,0);
+  const d = new Date(date); d.setHours(0,0,0,0);
+  if (d.getTime()===today.getTime()) return 'today';
+
+  const next  = new Date(DATA.last); next.setDate(next.getDate()+DATA.dur);
+  const ovul  = new Date(next); ovul.setDate(ovul.getDate()-14);
+  const fst   = new Date(ovul); fst.setDate(fst.getDate()-3);
+  const fen   = new Date(ovul); fen.setDate(fen.getDate()+3);
+  const lend  = new Date(DATA.last); lend.setDate(lend.getDate()+DATA.pdur-1);
+  const nend  = new Date(next); nend.setDate(nend.getDate()+DATA.pdur-1);
+
+  if ((d>=DATA.last&&d<=lend)||(d>=next&&d<=nend)) return 'period';
+  if (d.getTime()===ovul.getTime()) return 'ovulation';
+  if (d>=fst&&d<=fen) return 'fertile';
+  const cd = ((d-DATA.last)/864e5|0)+1;
+  const cm = ((cd-1)%DATA.dur)+1;
+  if (cm>DATA.pdur&&cm<=13) return 'folicular';
+  if (cm>16) return 'luteal';
+  return '';
+}
+
+function renderCal() {
+  const y=CAL_V.getFullYear(), m=CAL_V.getMonth();
+  document.getElementById('cal-title').textContent=`${MES[m]} ${y}`;
+  const first=new Date(y,m,1), last=new Date(y,m+1,0);
+  let sdow=first.getDay(); sdow=sdow===0?6:sdow-1;
+  const g=document.getElementById('cal'); g.innerHTML='';
+  for(let i=0;i<sdow;i++){const e=document.createElement('div');e.className='day emp';g.appendChild(e);}
+  for(let d=1;d<=last.getDate();d++){
+    const cell=document.createElement('div');
+    const dt=new Date(y,m,d);
+    const cls=getDayClass(dt);
+    cell.className=`day ${cls}`;
+    cell.textContent=d;
+    if(cls&&cls!=='emp') cell.title={period:'Período',fertile:'Fértil',ovulation:'Ovulación',folicular:'Folicular',luteal:'Lútea',today:'Hoy'}[cls]||'';
+    g.appendChild(cell);
+  }
+}
+
+function cm(dir){CAL_V.setMonth(CAL_V.getMonth()+dir);renderCal();}
+
+go();
+</script>
+</body>
+</html>
