@@ -802,19 +802,24 @@
         <ellipse cx="29" cy="95" rx="6" ry="3" fill="#1A1A2E"/>
         <ellipse cx="41" cy="95" rx="6" ry="3" fill="#1A1A2E"/>
         <!-- Arms -->
-       <rect x="2" y="62" width="16" height="5" rx="2.5" fill="#C8303A" transform="rotate(-10,10,64.5)"/>
-        <rect x="52" y="62" width="16" height="5" rx="2.5" fill="#C8303A" transform="rotate(10,60,64.5)"/>
+       <path d="M12,56 Q16,66 24,64" stroke="#C8303A" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <path d="M56,56 Q52,66 44,64" stroke="#C8303A" stroke-width="5" fill="none" stroke-linecap="round"/>
+        
+        <g id="cartel-iniciar" transform="translate(18, 60)">
+          <rect x="0" y="0" width="32" height="11" rx="3" fill="#D7CCC8" stroke="#8D6E63" stroke-width="1"/>
+          <text x="16" y="8" font-size="6" font-family="sans-serif" font-weight="bold" fill="#4E342E" text-anchor="middle">INICIAR</text>
+        </g>
       </svg>
     </div>
     <h2>¡Bienvenida!</h2>
-    <p>Completa tu perfil para comenzar a trackear tu ciclo con inteligencia y actitud.</p>
+    <p>Registremos tu ciclo.</p>
     <div class="form-group">
       <label>Tu nombre</label>
-      <input type="text" id="inp-nombre" placeholder="Ej. Valentina" maxlength="30">
+      <input type="text" id="inp-nombre" placeholder="Ej. Michell" maxlength="30">
     </div>
     <div class="form-group">
       <label>Tu edad</label>
-      <input type="number" id="inp-edad" placeholder="Ej. 26" min="14" max="60">
+      <input type="number" id="inp-edad" placeholder="Ej. 24" min="14" max="60">
     </div>
     <div class="form-group">
       <label>Fecha de tu última menstruación</label>
@@ -1349,10 +1354,23 @@ function drawDropOnCanvas(x, y, scale = 1) {
 
   // Arms
   ctx.fillStyle = '#C8303A';
-  ctx.save(); ctx.translate(-22 * s, 14 * s); ctx.rotate(-0.4);
-  ctx.beginPath(); ctx.roundRect(0, -4 * s, 18 * s, 8 * s, 4 * s); ctx.fill(); ctx.restore();
-  ctx.save(); ctx.translate(4 * s, 14 * s); ctx.rotate(0.4);
-  ctx.beginPath(); ctx.roundRect(0, -4 * s, 18 * s, 8 * s, 4 * s); ctx.fill(); ctx.restore();
+  // Brazo Izquierdo (Bajado a la cadera en 32*s y rotado hacia abajo/afuera en -0.8)
+  ctx.save(); 
+  ctx.translate(-22 * s, 32 * s); 
+  ctx.rotate(-0.8);
+  ctx.beginPath(); 
+  ctx.roundRect(0, -4 * s, 18 * s, 7 * s, 3.5 * s); 
+  ctx.fill(); 
+  ctx.restore();
+
+  // Brazo Derecho (Bajado a la cadera en 32*s y rotado hacia abajo/afuera en 0.8)
+  ctx.save(); 
+  ctx.translate(4 * s, 32 * s); 
+  ctx.rotate(0.8);
+  ctx.beginPath(); 
+  ctx.roundRect(0, -4 * s, 18 * s, 7 * s, 3.5 * s); 
+  ctx.fill(); 
+  ctx.restore();
 
   // Sign
   const sw = 70 * s, sh = 30 * s;
@@ -1566,7 +1584,7 @@ document.getElementById('btn-sos').addEventListener('click', () => {
   const tipEl = document.getElementById('sos-tip');
   tipEl.textContent = sosTips[phase.name] || sosTips['Lútea'];
   tipEl.classList.add('show');
-  showToast('🆘 Modo SOS activado. ¡Descansa sin culpa!');
+  showToast('😈 Hoy ve más suave contigo');
   refreshHistory();
 });
 
