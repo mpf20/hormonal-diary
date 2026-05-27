@@ -3,626 +3,1814 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hormonal Diary — Dashboard Premium</title>
+<title>Cicla — Tu ciclo, tu poder</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@700;900&display=swap');
 
   :root {
-    --rosa:        #FADADD;
-    --rosa-m:      #F4A7B9;
-    --rosa-d:      #D4607A;
-    --lila:        #EDE0F7;
-    --lila-m:      #C9A8E0;
-    --lila-d:      #8B5DB8;
-    --durazno:     #FDEBD0;
-    --durazno-m:   #F0B98A;
-    --durazno-d:   #C47940;
-    --crema:       #FFF9F4;
-    --beige:       #F5F0EB;
-    --beige-m:     #DDD0C4;
-    --beige-d:     #A08A78;
-    --menta:       #DFF0E8;
-    --menta-d:     #5E9E80;
-    --text:        #3D2433;
-    --text-s:      #7C5A6A;
-    --text-xs:     #B09AA8;
-    --white:       #FFFFFF;
-    --sh:          rgba(61,36,51,0.07);
-    --sh-m:        rgba(61,36,51,0.14);
+    --rose: #E8A4B0;
+    --rose-deep: #C97B8A;
+    --blush: #F5D6DC;
+    --cream: #FDF6F0;
+    --lavender: #C8B4E0;
+    --sage: #A8C5B5;
+    --mauve: #C4A5C8;
+    --gold: #D4A017;
+    --gold-light: #F0C842;
+    --gold-shine: #FFE680;
+    --dark: #2A1F2E;
+    --text: #3D2B3D;
+    --muted: #8A7090;
+    --white: #FFFFFF;
+    --font-display: 'Playfair Display', serif;
+    --font-body: 'DM Sans', sans-serif;
+    --shadow-soft: 0 8px 32px rgba(100,60,80,0.12);
+    --shadow-gold: 0 4px 24px rgba(212,160,23,0.4);
   }
 
-  * { margin:0; padding:0; box-sizing:border-box; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    background: var(--crema);
+    font-family: var(--font-body);
+    background: var(--cream);
     color: var(--text);
-    min-height: 100vh;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
   }
 
-  body::before {
-    content:'';
-    position:fixed; inset:0; z-index:0; pointer-events:none;
-    background:
-      radial-gradient(ellipse 70% 55% at 5% 15%,  rgba(244,167,185,.35) 0%, transparent 65%),
-      radial-gradient(ellipse 60% 70% at 95% 85%,  rgba(201,168,224,.3)  0%, transparent 65%),
-      radial-gradient(ellipse 50% 40% at 50% 50%,  rgba(240,185,138,.2)  0%, transparent 70%);
+  /* ===== SCREEN MANAGEMENT ===== */
+  .screen {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+  }
+  .screen.active {
+    opacity: 1;
+    pointer-events: all;
   }
 
-  .wrap { position:relative; z-index:1; max-width:1160px; margin:0 auto; padding:20px 18px 48px; }
+  /* ===== SCREEN 1: WELCOME / GAME ===== */
+  #screen-welcome {
+    z-index: 100;
+    overflow: hidden;
+  }
 
-  /* ── HEADER ── */
-  .hdr { text-align:center; padding:44px 16px 32px; }
-  .hdr-pill {
-    display:inline-flex; align-items:center; gap:6px;
-    background:var(--rosa); color:var(--rosa-d);
-    font-size:10px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase;
-    padding:5px 16px; border-radius:20px; margin-bottom:14px;
+  .sax-bg {
+    position: absolute;
+    inset: 0;
+    background-color: #FCE8EE;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Ctext y='55' font-size='42' opacity='0.18'%3E🎷%3C/text%3E%3Ctext x='50' y='100' font-size='28' opacity='0.12'%3E🎷%3C/text%3E%3Ctext x='5' y='25' font-size='20' opacity='0.10'%3E🎷%3C/text%3E%3C/svg%3E");
+    background-size: 100px 100px;
   }
-  .hdr h1 {
-    font-family:'Cormorant Garamond',serif;
-    font-size:clamp(34px,5.5vw,58px); line-height:1.05;
-    color:var(--text); margin-bottom:10px;
-  }
-  .hdr h1 em { color:var(--rosa-d); font-style:italic; }
-  .hdr p { font-size:13px; color:var(--text-s); font-weight:300; letter-spacing:.4px; }
 
-  /* ── CONFIG PANEL ── */
-  .cfg {
-    background:var(--white); border-radius:22px;
-    padding:24px 28px; margin-bottom:22px;
-    box-shadow:0 2px 18px var(--sh);
+  .sax-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(248,220,228,0.3) 0%, transparent 70%);
   }
-  .sec-lbl {
-    font-size:11px; font-weight:600; letter-spacing:1.8px; text-transform:uppercase;
-    color:var(--text-s); margin-bottom:14px;
-  }
-  .cfg-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px; }
-  .cfg-item label { display:block; font-size:11px; color:var(--text-xs); margin-bottom:5px; font-weight:500; }
-  .cfg-item input {
-    width:100%; border:1.5px solid var(--beige-m); border-radius:11px;
-    padding:9px 13px; font-family:'Plus Jakarta Sans',sans-serif;
-    font-size:13px; color:var(--text); background:var(--crema);
-    outline:none; transition:border-color .2s;
-  }
-  .cfg-item input:focus { border-color:var(--lila-m); background:var(--white); }
-  .upd-btn {
-    margin-top:16px; background:linear-gradient(135deg,var(--rosa-d),var(--lila-d));
-    color:#fff; border:none; border-radius:12px; padding:10px 26px;
-    font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; font-weight:600;
-    cursor:pointer; letter-spacing:.4px; transition:opacity .2s,transform .15s;
-  }
-  .upd-btn:hover { opacity:.9; transform:translateY(-1px); }
 
-  /* ── PHASE BANNER ── */
-  .phase-banner {
-    border-radius:22px; padding:26px 32px;
-    margin-bottom:22px; display:flex; align-items:center; gap:20px;
-    box-shadow:0 4px 24px var(--sh-m); position:relative; overflow:hidden;
-    transition:background .5s;
+  #game-canvas {
+    position: absolute;
+    inset: 0;
+    cursor: default;
   }
-  .phase-banner::after {
-    content:''; position:absolute; right:-40px; top:-40px;
-    width:200px; height:200px; border-radius:50%;
-    background:rgba(255,255,255,.18); pointer-events:none;
-  }
-  .ph-icon { font-size:52px; flex-shrink:0; }
-  .ph-info h2 { font-family:'Cormorant Garamond',serif; font-size:24px; margin-bottom:4px; }
-  .ph-info p { font-size:13px; opacity:.8; font-weight:300; max-width:480px; }
-  .ph-day { margin-left:auto; text-align:center; background:rgba(255,255,255,.35); border-radius:16px; padding:12px 22px; flex-shrink:0; }
-  .ph-day .n { font-family:'Cormorant Garamond',serif; font-size:42px; line-height:1; }
-  .ph-day .l { font-size:10px; opacity:.75; letter-spacing:1.5px; text-transform:uppercase; margin-top:2px; }
 
-  /* ── CARDS ── */
-  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr)); gap:14px; margin-bottom:22px; }
+  .welcome-title {
+    position: absolute;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 4vw, 2.2rem);
+    color: var(--rose-deep);
+    text-align: center;
+    z-index: 5;
+    text-shadow: 0 2px 8px rgba(201,123,138,0.3);
+    white-space: nowrap;
+  }
+
+  .welcome-subtitle {
+    position: absolute;
+    top: 72px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.85rem;
+    color: var(--muted);
+    text-align: center;
+    z-index: 5;
+    white-space: nowrap;
+    letter-spacing: 0.05em;
+  }
+
+  /* Running Blood Drop */
+  #drop-runner {
+    position: absolute;
+    width: 90px;
+    height: 110px;
+    cursor: pointer;
+    z-index: 10;
+    user-select: none;
+    will-change: transform;
+    transition: filter 0.1s;
+  }
+  #drop-runner:hover { filter: brightness(1.1) drop-shadow(0 0 12px rgba(232,90,110,0.5)); }
+
+  /* ===== GOLDEN GATES ===== */
+  #golden-gates {
+    position: absolute;
+    inset: 0;
+    z-index: 50;
+    display: none;
+    pointer-events: none;
+  }
+  #golden-gates.show { display: flex; }
+
+  .gate {
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(135deg,
+      #8B6914 0%, #D4A017 15%, #F0C842 30%, #FFE680 45%,
+      #D4A017 55%, #B8860B 70%, #F0C842 80%, #D4A017 90%, #8B6914 100%
+    );
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    transition: transform 1.4s cubic-bezier(0.77, 0, 0.175, 1);
+    box-shadow: inset 0 0 60px rgba(0,0,0,0.3), 0 0 40px rgba(212,160,23,0.6);
+  }
+
+  .gate-left { transform: translateX(0); border-right: 4px solid #8B6914; }
+  .gate-right { transform: translateX(0); border-left: 4px solid #8B6914; }
+
+  #golden-gates.open .gate-left { transform: translateX(-100%); }
+  #golden-gates.open .gate-right { transform: translateX(100%); }
+
+  .gate-bar {
+    width: 12px;
+    height: 85%;
+    background: linear-gradient(180deg, #FFE680, #B8860B, #FFE680, #D4A017, #FFE680);
+    border-radius: 6px;
+    position: absolute;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.3);
+  }
+  .gate-bar:nth-child(1) { left: 15%; }
+  .gate-bar:nth-child(2) { left: 30%; }
+  .gate-bar:nth-child(3) { left: 45%; }
+  .gate-bar:nth-child(4) { left: 60%; }
+  .gate-bar:nth-child(5) { left: 75%; }
+
+  .gate-top-arch {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 80px;
+    background: linear-gradient(180deg, #8B6914, #D4A017);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+  }
+
+  .gate-star {
+    font-size: 2rem;
+    position: absolute;
+    animation: gateStar 2s infinite alternate;
+  }
+  @keyframes gateStar {
+    from { opacity: 0.6; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1.1); }
+  }
+
+  /* ===== SCREEN 2: ONBOARDING ===== */
+  #screen-onboarding {
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #FCE8EE 0%, #F5EEF8 50%, #EEF5F0 100%);
+  }
+
+  .onboard-card {
+    background: white;
+    border-radius: 24px;
+    padding: 48px 40px;
+    width: min(480px, 92vw);
+    box-shadow: var(--shadow-soft), 0 0 0 1px rgba(232,164,176,0.2);
+    text-align: center;
+  }
+
+  .onboard-header-drop {
+    margin-bottom: 20px;
+  }
+
+  .onboard-card h2 {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    color: var(--rose-deep);
+    margin-bottom: 6px;
+  }
+
+  .onboard-card p {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-bottom: 28px;
+    line-height: 1.5;
+  }
+
+  .form-group {
+    margin-bottom: 18px;
+    text-align: left;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .form-group input {
+    width: 100%;
+    padding: 13px 16px;
+    border: 2px solid #F0E0E4;
+    border-radius: 12px;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--text);
+    background: var(--cream);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .form-group input:focus {
+    border-color: var(--rose);
+    box-shadow: 0 0 0 3px rgba(232,164,176,0.2);
+    background: white;
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--rose-deep), var(--rose));
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.03em;
+    margin-top: 8px;
+    box-shadow: 0 4px 16px rgba(201,123,138,0.4);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(201,123,138,0.5);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* ===== SCREEN 3,4,5: MAIN APP ===== */
+  #screen-app {
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    background: #F9F1F4;
+    overflow: hidden;
+  }
+
+  /* NAVBAR */
+  .navbar {
+    background: white;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    border-bottom: 1px solid rgba(232,164,176,0.25);
+    box-shadow: 0 2px 12px rgba(100,60,80,0.07);
+    flex-shrink: 0;
+    z-index: 10;
+  }
+
+  .nav-brand {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    color: var(--rose-deep);
+    font-weight: 700;
+  }
+
+  .nav-tabs {
+    display: flex;
+    gap: 4px;
+  }
+
+  .nav-tab {
+    padding: 8px 16px;
+    border: none;
+    background: transparent;
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.03em;
+  }
+
+  .nav-tab.active {
+    background: var(--blush);
+    color: var(--rose-deep);
+    font-weight: 600;
+  }
+
+  .nav-tab:hover:not(.active) { background: #FFF0F3; color: var(--rose-deep); }
+
+  /* APP VIEWS */
+  .app-view {
+    display: none;
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    gap: 20px;
+  }
+  .app-view.active {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* CARDS */
   .card {
-    background:var(--white); border-radius:18px; padding:20px 16px;
-    box-shadow:0 2px 14px var(--sh); position:relative; overflow:hidden;
-    transition:transform .2s,box-shadow .2s;
-    animation:slideUp .5s ease both;
+    background: white;
+    border-radius: 20px;
+    padding: 22px;
+    box-shadow: 0 2px 16px rgba(100,60,80,0.07);
   }
-  .card:hover { transform:translateY(-3px); box-shadow:0 7px 26px var(--sh-m); }
-  .card::before {
-    content:''; position:absolute; top:0; left:0; right:0; height:3.5px; border-radius:18px 18px 0 0;
+
+  .card-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
   }
-  .card.r::before { background:linear-gradient(90deg,var(--rosa-d),var(--rosa-m)); }
-  .card.l::before { background:linear-gradient(90deg,var(--lila-d),var(--lila-m)); }
-  .card.d::before { background:linear-gradient(90deg,var(--durazno-d),var(--durazno-m)); }
-  .card.g::before { background:linear-gradient(90deg,var(--menta-d),var(--menta)); }
-  .card-ico { font-size:22px; margin-bottom:10px; }
-  .card-lbl { font-size:10px; color:var(--text-s); letter-spacing:.5px; margin-bottom:7px; font-weight:600; text-transform:uppercase; }
-  .card-val { font-family:'Cormorant Garamond',serif; font-size:28px; color:var(--text); line-height:1; }
-  .card-val.sm { font-size:13px; font-family:'Plus Jakarta Sans',sans-serif; font-weight:500; }
-  .card-sub { font-size:10px; color:var(--text-xs); margin-top:5px; }
-  .badge { display:inline-block; font-size:10px; font-weight:600; padding:3px 9px; border-radius:9px; margin-top:7px; }
-  .badge.ok  { background:var(--menta); color:var(--menta-d); }
-  .badge.warn{ background:var(--durazno); color:var(--durazno-d); }
-  .badge.hot { background:var(--rosa); color:var(--rosa-d); }
 
-  /* ── SECTION TITLE ── */
-  .stitle {
-    font-family:'Cormorant Garamond',serif; font-size:20px; color:var(--text);
-    margin-bottom:14px; display:flex; align-items:center; gap:10px;
+  /* HOME VIEW */
+  .greeting-block {
+    background: linear-gradient(135deg, var(--rose-deep), var(--mauve));
+    color: white;
+    border-radius: 20px;
+    padding: 22px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
   }
-  .stitle::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,var(--rosa-m),transparent); margin-left:8px; }
-  .sec { margin-bottom:26px; }
 
-  /* ── CYCLE TIMELINE ── */
-  .timeline-box { background:var(--white); border-radius:20px; padding:24px 28px; box-shadow:0 2px 16px var(--sh); }
-  .cycle-track { position:relative; height:56px; border-radius:28px; overflow:hidden; background:var(--beige); margin-bottom:14px; }
-  .seg { position:absolute; top:0; bottom:0; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; letter-spacing:.4px; }
-  .seg.ms { background:linear-gradient(135deg,#E87A98,#F4A7B9); left:0;    width:17.8%; color:#fff; }
-  .seg.fo { background:linear-gradient(135deg,#B8D8FF,#DFF0E8); left:17.8%; width:28.6%; color:var(--text-s); }
-  .seg.ov { background:linear-gradient(135deg,#F0B98A,#FFE4A0); left:46.4%; width:10.7%; color:#fff; }
-  .seg.lu { background:linear-gradient(135deg,#D8C8F0,#EDE0F7); left:57.1%; width:42.9%; color:var(--text-s); }
-  .cursor {
-    position:absolute; top:-5px; bottom:-5px; width:3px;
-    background:var(--text); border-radius:3px; z-index:10;
-    box-shadow:0 0 10px rgba(61,36,51,.4);
-    transition:left .9s cubic-bezier(.34,1.56,.64,1);
+  .greeting-text h3 {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    margin-bottom: 6px;
+    line-height: 1.3;
   }
-  .cursor::after { content:'▲'; position:absolute; bottom:-19px; left:50%; transform:translateX(-50%); font-size:9px; color:var(--text); }
-  .tl-labs { display:flex; font-size:10px; color:var(--text-xs); margin-top:22px; }
-  .tl-labs span { flex:1; text-align:center; }
 
-  /* ── CALENDAR ── */
-  .cal-box { background:var(--white); border-radius:20px; padding:24px 28px; box-shadow:0 2px 16px var(--sh); }
-  .cal-nav-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
-  .cal-ttl { font-family:'Cormorant Garamond',serif; font-size:20px; }
-  .cal-btn { background:var(--beige); border:none; border-radius:10px; padding:6px 15px; cursor:pointer; font-size:14px; color:var(--text); transition:background .2s; }
-  .cal-btn:hover { background:var(--rosa); }
-  .dow-row { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:6px; }
-  .dow-row span { text-align:center; font-size:10px; color:var(--text-s); font-weight:600; letter-spacing:.5px; text-transform:uppercase; padding:4px 0; }
-  .days-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
-  .day {
-    aspect-ratio:1; border-radius:12px; display:flex; align-items:center;
-    justify-content:center; font-size:12px; cursor:default; transition:transform .15s;
-    position:relative;
+  .greeting-text p {
+    font-size: 0.82rem;
+    opacity: 0.9;
+    line-height: 1.5;
   }
-  .day.emp { opacity:0; pointer-events:none; }
-  .day.today { background:var(--text)!important; color:#fff!important; font-weight:600; box-shadow:0 4px 14px rgba(61,36,51,.28); }
-  .day.period    { background:var(--rosa); color:var(--text); font-weight:500; }
-  .day.fertile   { background:var(--lila-m); color:#fff; }
-  .day.ovulation { background:var(--durazno-d); color:#fff; font-weight:700; box-shadow:0 2px 10px rgba(196,121,64,.4); }
-  .day.luteal    { background:var(--lila); color:var(--text); }
-  .day.folicular { background:var(--menta); color:var(--text); }
-  .day:not(.emp):not(.today):hover { transform:scale(1.12); z-index:2; }
-  .cal-legend { display:flex; gap:14px; flex-wrap:wrap; margin-top:16px; padding-top:16px; border-top:1px solid var(--beige); }
-  .leg-i { display:flex; align-items:center; gap:5px; font-size:10px; color:var(--text-s); }
-  .leg-dot { width:11px; height:11px; border-radius:3px; flex-shrink:0; }
 
-  /* ── TWO COL ── */
-  .two { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:26px; }
-  @media(max-width:680px) { .two { grid-template-columns:1fr; } }
-
-  /* ── CHART BOX ── */
-  .cbox { background:var(--white); border-radius:20px; padding:24px 26px; box-shadow:0 2px 16px var(--sh); }
-  .cbox-ttl { font-family:'Cormorant Garamond',serif; font-size:16px; margin-bottom:16px; color:var(--text); }
-
-  /* ── MOOD BARS ── */
-  .mbars { display:flex; flex-direction:column; gap:11px; }
-  .mrow { display:flex; align-items:center; gap:10px; font-size:11px; }
-  .mlbl { width:88px; color:var(--text-s); flex-shrink:0; }
-  .mbar-w { flex:1; height:9px; background:var(--beige); border-radius:5px; overflow:hidden; }
-  .mbar { height:100%; border-radius:5px; transition:width 1.1s cubic-bezier(.34,1.56,.64,1); }
-  .mpct { width:34px; text-align:right; color:var(--text-xs); font-size:10px; }
-
-  /* ── TAGS ── */
-  .tags { display:flex; flex-wrap:wrap; gap:7px; }
-  .tag { padding:5px 12px; border-radius:18px; font-size:11px; font-weight:500; transition:transform .15s; }
-  .tag:hover { transform:scale(1.06); }
-  .tag.r { background:var(--rosa); color:var(--rosa-d); }
-  .tag.l { background:var(--lila); color:var(--lila-d); }
-  .tag.d { background:var(--durazno); color:var(--durazno-d); }
-  .tag.g { background:var(--menta); color:var(--menta-d); }
-
-  /* ── GAUGE SVG ── */
-  .gauge-wrap { display:flex; flex-direction:column; align-items:center; padding:10px 0; }
-  .gauge-ttl { font-family:'Cormorant Garamond',serif; font-size:15px; text-align:center; margin-top:8px; }
-  .gauge-sub { font-size:10px; color:var(--text-s); text-align:center; }
-
-  /* ── MINI STATS ── */
-  .mstats { display:flex; flex-direction:column; gap:10px; }
-  .mstat { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-radius:12px; }
-  .mstat span:first-child { font-size:11px; color:var(--text-s); }
-  .mstat span:last-child { font-family:'Cormorant Garamond',serif; font-size:17px; color:var(--text); }
-
-  /* ── INSIGHT CARDS ── */
-  .insights { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; margin-bottom:26px; }
-  .insight {
-    border-radius:16px; padding:18px 20px;
-    box-shadow:0 2px 12px var(--sh); position:relative; overflow:hidden;
+  .phase-days-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
   }
-  .insight-ico { font-size:26px; margin-bottom:8px; }
-  .insight-lbl { font-size:10px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:var(--text-s); margin-bottom:5px; }
-  .insight-text { font-size:12px; color:var(--text); line-height:1.55; }
 
-  /* ── PHASES GRID ── */
-  .phases { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin-bottom:26px; }
-  .phase-card { border-radius:18px; padding:22px 20px; box-shadow:0 2px 14px var(--sh); }
-  .phase-card .p-ico { font-size:30px; margin-bottom:8px; }
-  .phase-card .p-name { font-family:'Cormorant Garamond',serif; font-size:17px; margin-bottom:4px; }
-  .phase-card .p-days { font-size:10px; color:var(--text-s); margin-bottom:12px; }
+  .phase-chip {
+    background: linear-gradient(135deg, #F5EEF8, #F0E8F5);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
 
-  /* ── FOOTER ── */
-  .ftr { text-align:center; padding:24px; color:var(--text-xs); font-size:11px; border-top:1px solid var(--beige); margin-top:14px; }
-  .ftr a { color:var(--rosa-d); text-decoration:none; }
+  .phase-chip .label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
 
-  /* ── ANIMATIONS ── */
-  @keyframes slideUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
-  .card:nth-child(1){animation-delay:.04s}.card:nth-child(2){animation-delay:.08s}.card:nth-child(3){animation-delay:.12s}
-  .card:nth-child(4){animation-delay:.16s}.card:nth-child(5){animation-delay:.20s}.card:nth-child(6){animation-delay:.24s}
-  .phase-banner{animation:slideUp .6s ease both;}
+  .phase-chip .value {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    color: var(--mauve);
+    font-weight: 700;
+  }
+
+  .days-chip {
+    background: linear-gradient(135deg, #EEF5F0, #E8F5EE);
+  }
+
+  .days-chip .value {
+    font-size: 1.4rem;
+    color: var(--sage);
+  }
+
+  /* SOS BUTTON */
+  .sos-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #FF6B6B, #FF8E8E);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(255,107,107,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .sos-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,107,107,0.45); }
+
+  /* FORM OPTIONS */
+  .question-block { margin-bottom: 16px; }
+  .question-block .q-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .options-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+
+  .opt-chip {
+    padding: 7px 13px;
+    border: 2px solid #F0E0E4;
+    border-radius: 20px;
+    background: white;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.18s;
+    white-space: nowrap;
+  }
+
+  .opt-chip:hover { border-color: var(--rose); color: var(--rose-deep); }
+  .opt-chip.selected {
+    background: var(--blush);
+    border-color: var(--rose-deep);
+    color: var(--rose-deep);
+    font-weight: 700;
+  }
+
+  /* CHARACTER ILLUSTRATIONS */
+  .char-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 0;
+  }
+
+  .char-svg {
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+
+  .char-svg:hover { transform: scale(1.04); }
+  .char-svg.bounce {
+    animation: bounce 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: scale(1); }
+    30% { transform: scale(1.15) rotate(-3deg); }
+    60% { transform: scale(0.95) rotate(2deg); }
+    80% { transform: scale(1.07); }
+  }
+
+  /* ANALYTICS VIEW */
+  .prediction-card {
+    border-left: 4px solid var(--rose-deep);
+    padding-left: 18px;
+  }
+
+  .pred-date {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    color: var(--rose-deep);
+    font-weight: 900;
+  }
+
+  .phase-timeline {
+    display: flex;
+    gap: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    height: 40px;
+    margin-top: 10px;
+  }
+
+  .phase-block {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: white;
+    text-align: center;
+    flex: 1;
+  }
+
+  .phase-block.menstrual { background: #E8A4B0; }
+  .phase-block.folicular { background: #A8C5B5; }
+  .phase-block.ovulacion { background: #F0C842; }
+  .phase-block.lutea { background: #C8B4E0; }
+
+  .sport-advice {
+    background: linear-gradient(135deg, #EEF5F0, #E8F5EE);
+    border-radius: 16px;
+    padding: 18px;
+    margin-top: 12px;
+  }
+
+  .sport-advice h4 {
+    color: var(--sage);
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .sport-advice p {
+    font-size: 0.82rem;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* HISTORY VIEW */
+  .history-table-wrap {
+    overflow-x: auto;
+    border-radius: 14px;
+    border: 1px solid rgba(232,164,176,0.2);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+  }
+
+  thead tr {
+    background: linear-gradient(135deg, var(--rose-deep), var(--mauve));
+    color: white;
+  }
+
+  thead th {
+    padding: 12px 10px;
+    text-align: left;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid rgba(232,164,176,0.15);
+    transition: background 0.15s;
+  }
+
+  tbody tr:hover { background: var(--blush); }
+
+  tbody td {
+    padding: 10px;
+    color: var(--text);
+  }
+
+  .mood-tag {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-top: 12px;
+  }
+
+  .cal-header {
+    text-align: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--muted);
+    padding: 4px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .cal-day {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 500;
+    background: #F0E8EC;
+    color: var(--muted);
+    transition: transform 0.15s;
+    cursor: default;
+  }
+
+  .cal-day:hover { transform: scale(1.1); }
+  .cal-day.today { box-shadow: 0 0 0 2px var(--rose-deep); font-weight: 700; color: var(--rose-deep); }
+  .cal-day.empty { background: transparent; }
+
+  .btn-danger {
+    padding: 12px 20px;
+    background: transparent;
+    border: 2px solid #FF6B6B;
+    color: #FF6B6B;
+    border-radius: 12px;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    align-self: flex-start;
+  }
+
+  .btn-danger:hover { background: #FF6B6B; color: white; }
+
+  .sos-tip {
+    background: linear-gradient(135deg, #FFF5E8, #FFF0E0);
+    border: 1px solid rgba(240,200,66,0.4);
+    border-radius: 16px;
+    padding: 16px;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--text);
+    display: none;
+  }
+  .sos-tip.show { display: block; }
+
+  .no-logs {
+    text-align: center;
+    padding: 30px;
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+
+  .success-toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: linear-gradient(135deg, var(--sage), #7EB8A0);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 14px;
+    font-weight: 600;
+    font-size: 0.88rem;
+    box-shadow: 0 8px 24px rgba(100,160,130,0.4);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 999;
+  }
+  .success-toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Scrollbar styling */
+  .app-view::-webkit-scrollbar { width: 4px; }
+  .app-view::-webkit-scrollbar-track { background: transparent; }
+  .app-view::-webkit-scrollbar-thumb { background: var(--blush); border-radius: 4px; }
+
+  /* FORTUNE TELLER CLICK */
+  #crystal-glow { transition: filter 0.3s; cursor: pointer; }
+  #crystal-glow:hover { filter: drop-shadow(0 0 12px rgba(200,180,224,0.8)); }
+
+  @media (max-width: 480px) {
+    .navbar { padding: 0 12px; }
+    .nav-tab { padding: 7px 10px; font-size: 0.75rem; }
+    .app-view { padding: 16px; }
+    .greeting-block { flex-direction: column; text-align: center; }
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
 
-  <!-- HEADER -->
-  <div class="hdr">
-    <div class="hdr-pill">✦ &nbsp;hormonal diary&nbsp; ✦</div>
-    <h1>Mi <em>Diario</em> Hormonal</h1>
-    <p id="date-line">Cargando...</p>
-  </div>
+<!-- TOAST -->
+<div class="success-toast" id="toast">✓ Registro guardado con éxito</div>
 
-  <!-- CONFIG -->
-  <div class="cfg">
-    <div class="sec-lbl">Mis datos del ciclo</div>
-    <div class="cfg-grid">
-      <div class="cfg-item"><label>Duración del ciclo (días)</label><input type="number" id="cdur" value="28" min="21" max="40"></div>
-      <div class="cfg-item"><label>Duración del período (días)</label><input type="number" id="pdur" value="5" min="2" max="10"></div>
-      <div class="cfg-item"><label>Fecha último período</label><input type="date" id="lstart"></div>
+<!-- ===================== SCREEN 1: WELCOME ===================== -->
+<div class="screen active" id="screen-welcome">
+  <div class="sax-bg"></div>
+  <canvas id="game-canvas"></canvas>
+  <div class="welcome-title">✨ Cicla — Tu ciclo, tu poder ✨</div>
+  <div class="welcome-subtitle">Atrapa a la gota para entrar</div>
+  <div id="golden-gates">
+    <div class="gate gate-left">
+      <div class="gate-top-arch"><span class="gate-star">★</span></div>
+      <div class="gate-bar"></div><div class="gate-bar"></div><div class="gate-bar"></div><div class="gate-bar"></div><div class="gate-bar"></div>
     </div>
-    <button class="upd-btn" onclick="go()">Actualizar mi ciclo ✨</button>
-  </div>
-
-  <!-- PHASE BANNER -->
-  <div id="banner" class="phase-banner"></div>
-
-  <!-- METRIC CARDS -->
-  <div class="cards">
-    <div class="card r"><div class="card-ico">⏳</div><div class="card-lbl">Próximo período</div><div id="c1" class="card-val">—</div><div class="card-sub">días restantes</div></div>
-    <div class="card l"><div class="card-ico">📅</div><div class="card-lbl">Fecha estimada</div><div id="c2" class="card-val sm">—</div><div class="card-sub">próximo período</div></div>
-    <div class="card d"><div class="card-ico">🥚</div><div class="card-lbl">Ovulación est.</div><div id="c3" class="card-val sm">—</div><div id="c3s" class="card-sub">—</div></div>
-    <div class="card r"><div class="card-ico">🌺</div><div class="card-lbl">Ventana fértil</div><div id="c4" class="card-val sm">—</div><div class="card-sub">inicio → fin</div></div>
-    <div class="card l"><div class="card-ico">🌀</div><div class="card-lbl">Día del ciclo</div><div id="c5" class="card-val">—</div><div class="card-sub">de <span id="c5t">28</span> días</div></div>
-    <div class="card g"><div class="card-ico">💡</div><div class="card-lbl">Alerta</div><div id="c6" class="card-val sm badge ok">—</div></div>
-  </div>
-
-  <!-- CYCLE TIMELINE -->
-  <div class="sec">
-    <div class="stitle">Progreso de tu ciclo actual</div>
-    <div class="timeline-box">
-      <div class="cycle-track">
-        <div class="seg ms">Menstrual</div>
-        <div class="seg fo">Folicular</div>
-        <div class="seg ov">🥚</div>
-        <div class="seg lu">Lútea</div>
-        <div class="cursor" id="cur" style="left:0%"></div>
-      </div>
-      <div class="tl-labs"><span>Día 1</span><span>Día 6</span><span>Día 13</span><span>14</span><span>Día 15</span><span>Día 28</span></div>
+    <div class="gate gate-right">
+      <div class="gate-top-arch"><span class="gate-star">★</span></div>
+      <div class="gate-bar"></div><div class="gate-bar"></div><div class="gate-bar"></div><div class="gate-bar"></div><div class="gate-bar"></div>
     </div>
   </div>
-
-  <!-- INSIGHTS -->
-  <div class="sec">
-    <div class="stitle">Insights hormonales</div>
-    <div class="insights" id="insights"></div>
-  </div>
-
-  <!-- CALENDAR -->
-  <div class="sec">
-    <div class="stitle">Calendario menstrual</div>
-    <div class="cal-box">
-      <div class="cal-nav-row">
-        <button class="cal-btn" onclick="cm(-1)">‹</button>
-        <div class="cal-ttl" id="cal-title"></div>
-        <button class="cal-btn" onclick="cm(1)">›</button>
-      </div>
-      <div class="dow-row"><span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sá</span><span>Do</span></div>
-      <div class="days-grid" id="cal"></div>
-      <div class="cal-legend">
-        <div class="leg-i"><div class="leg-dot" style="background:var(--rosa)"></div>Menstrual</div>
-        <div class="leg-i"><div class="leg-dot" style="background:var(--menta)"></div>Folicular</div>
-        <div class="leg-i"><div class="leg-dot" style="background:var(--lila-m)"></div>Fértil</div>
-        <div class="leg-i"><div class="leg-dot" style="background:var(--durazno-d)"></div>Ovulación</div>
-        <div class="leg-i"><div class="leg-dot" style="background:var(--lila)"></div>Lútea</div>
-        <div class="leg-i"><div class="leg-dot" style="background:var(--text)"></div>Hoy</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- TWO COLUMNS -->
-  <div class="two">
-    <!-- MOOD + TAGS -->
-    <div style="display:flex;flex-direction:column;gap:16px">
-      <div class="cbox">
-        <div class="cbox-ttl">Síntomas más comunes (simulados)</div>
-        <div class="mbars">
-          <div class="mrow"><div class="mlbl">Fatiga</div><div class="mbar-w"><div class="mbar" id="b1" style="width:0%;background:linear-gradient(90deg,var(--rosa-d),var(--rosa-m))"></div></div><div class="mpct">72%</div></div>
-          <div class="mrow"><div class="mlbl">Cólicos</div><div class="mbar-w"><div class="mbar" id="b2" style="width:0%;background:linear-gradient(90deg,var(--lila-d),var(--lila-m))"></div></div><div class="mpct">58%</div></div>
-          <div class="mrow"><div class="mlbl">Hinchazón</div><div class="mbar-w"><div class="mbar" id="b3" style="width:0%;background:linear-gradient(90deg,var(--durazno-d),var(--durazno-m))"></div></div><div class="mpct">45%</div></div>
-          <div class="mrow"><div class="mlbl">Ansiedad</div><div class="mbar-w"><div class="mbar" id="b4" style="width:0%;background:linear-gradient(90deg,var(--rosa-d),var(--lila-m))"></div></div><div class="mpct">61%</div></div>
-          <div class="mrow"><div class="mlbl">Antojos</div><div class="mbar-w"><div class="mbar" id="b5" style="width:0%;background:linear-gradient(90deg,var(--durazno-d),var(--menta))"></div></div><div class="mpct">80%</div></div>
-          <div class="mrow"><div class="mlbl">Acné</div><div class="mbar-w"><div class="mbar" id="b6" style="width:0%;background:linear-gradient(90deg,var(--lila-d),var(--rosa-m))"></div></div><div class="mpct">38%</div></div>
-        </div>
-      </div>
-      <div class="cbox">
-        <div class="cbox-ttl">Estado de hoy</div>
-        <div class="tags" id="tagsbox"></div>
-      </div>
-    </div>
-
-    <!-- FERTILITY + MINI STATS -->
-    <div style="display:flex;flex-direction:column;gap:16px">
-      <div class="cbox">
-        <div class="cbox-ttl">Fertilidad actual</div>
-        <div class="gauge-wrap">
-          <svg width="170" height="95" viewBox="0 0 170 95">
-            <defs>
-              <linearGradient id="gg" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#E87A98"/>
-                <stop offset="50%" stop-color="#C9A8E0"/>
-                <stop offset="100%" stop-color="#F0B98A"/>
-              </linearGradient>
-            </defs>
-            <path d="M12 85 A73 73 0 0 1 158 85" fill="none" stroke="#F0EBE8" stroke-width="13" stroke-linecap="round"/>
-            <path id="garc" d="M12 85 A73 73 0 0 1 158 85" fill="none" stroke="url(#gg)" stroke-width="13" stroke-linecap="round" stroke-dasharray="230" stroke-dashoffset="230" style="transition:stroke-dashoffset 1.3s cubic-bezier(.34,1.56,.64,1)"/>
-            <line id="needle" x1="85" y1="85" x2="85" y2="22" stroke="var(--text)" stroke-width="2.5" stroke-linecap="round" style="transform-origin:85px 85px;transition:transform 1.2s ease"/>
-            <circle cx="85" cy="85" r="5" fill="var(--text)"/>
-            <text id="gpct" x="85" y="72" text-anchor="middle" font-size="14" font-family="Cormorant Garamond,serif" fill="var(--text)">—%</text>
-          </svg>
-          <div class="gauge-ttl" id="glbl">Calculando...</div>
-          <div class="gauge-sub" id="gsub"></div>
-        </div>
-      </div>
-      <div class="cbox">
-        <div class="cbox-ttl">Resumen del ciclo</div>
-        <div class="mstats">
-          <div class="mstat" style="background:var(--rosa)"><span>Duración ciclo</span><span id="s1">28 días</span></div>
-          <div class="mstat" style="background:var(--lila)"><span>Duración período</span><span id="s2">5 días</span></div>
-          <div class="mstat" style="background:var(--durazno)"><span>Día ovulación</span><span id="s3">Día 14</span></div>
-          <div class="mstat" style="background:var(--menta)"><span>Días fértiles</span><span id="s4">~6 días</span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- PHASE GUIDE -->
-  <div class="sec">
-    <div class="stitle">Tu mapa hormonal</div>
-    <div class="phases">
-      <div class="phase-card" style="background:var(--rosa)">
-        <div class="p-ico">🔴</div>
-        <div class="p-name">Menstrual</div>
-        <div class="p-days">Días 1–5 · Descanso sagrado</div>
-        <div class="tags"><span class="tag r">Descanso</span><span class="tag r">Calor</span><span class="tag r">Jengibre</span></div>
-      </div>
-      <div class="phase-card" style="background:var(--menta)">
-        <div class="p-ico">🌱</div>
-        <div class="p-name">Folicular</div>
-        <div class="p-days">Días 6–13 · Energía y creatividad</div>
-        <div class="tags"><span class="tag g">Proyectos</span><span class="tag g">Cardio</span><span class="tag g">Social</span></div>
-      </div>
-      <div class="phase-card" style="background:var(--durazno)">
-        <div class="p-ico">🥚</div>
-        <div class="p-name">Ovulación</div>
-        <div class="p-days">Día ~14 · Máxima vitalidad</div>
-        <div class="tags"><span class="tag d">Fertilidad</span><span class="tag d">Poder</span><span class="tag d">Carisma</span></div>
-      </div>
-      <div class="phase-card" style="background:var(--lila)">
-        <div class="p-ico">🌙</div>
-        <div class="p-name">Lútea</div>
-        <div class="p-days">Días 15–28 · Intuición profunda</div>
-        <div class="tags"><span class="tag l">Journal</span><span class="tag l">Pilates</span><span class="tag l">Magnesio</span></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="ftr">
-    Hecho con amor 🌸 · <strong>Hormonal Diary</strong> · Tu sistema premium de bienestar femenino<br>
-    <span style="font-size:10px;margin-top:6px;display:block;">Herramienta de bienestar personal · No es un dispositivo médico · Consulta siempre con tu ginecóloga 💙</span>
-  </div>
-
+  <audio id="bg-music" loop>
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="click-sfx">
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" type="audio/mpeg">
+  </audio>
 </div>
+
+<!-- ===================== SCREEN 2: ONBOARDING ===================== -->
+<div class="screen" id="screen-onboarding">
+  <div class="onboard-card" style="margin:auto">
+    <div class="onboard-header-drop">
+      <svg width="70" height="86" viewBox="0 0 70 86" xmlns="http://www.w3.org/2000/svg">
+        <!-- Drop body -->
+        <path d="M35 5 C35 5 5 38 5 58 C5 74 19 83 35 83 C51 83 65 74 65 58 C65 38 35 5 35 5Z" fill="#E8404A"/>
+        <path d="M35 5 C35 5 20 38 20 58 C20 68 26 76 35 80" fill="#FF6B72" opacity="0.4"/>
+        <!-- Eyes - fierce blue -->
+        <ellipse cx="24" cy="55" rx="6.5" ry="7" fill="white"/>
+        <ellipse cx="46" cy="55" rx="6.5" ry="7" fill="white"/>
+        <ellipse cx="24.5" cy="55.5" rx="4.2" ry="5" fill="#1E5CB3"/>
+        <ellipse cx="46.5" cy="55.5" rx="4.2" ry="5" fill="#1E5CB3"/>
+        <ellipse cx="24.5" cy="55.5" rx="2.2" ry="2.8" fill="#0A2A6E"/>
+        <ellipse cx="46.5" cy="55.5" rx="2.2" ry="2.8" fill="#0A2A6E"/>
+        <circle cx="25.5" cy="53.8" r="1.1" fill="white"/>
+        <circle cx="47.5" cy="53.8" r="1.1" fill="white"/>
+        <!-- Winged eyeliner left -->
+        <path d="M17 50 Q24 47.5 31 50.5 L33 48 Q25 44.5 17 48Z" fill="#1A1A2E"/>
+        <path d="M31 50.5 L35 47 L33 50.5Z" fill="#1A1A2E"/>
+        <!-- Winged eyeliner right -->
+        <path d="M53 50 Q46 47.5 39 50.5 L37 48 Q45 44.5 53 48Z" fill="#1A1A2E"/>
+        <path d="M39 50.5 L35 47 L37 50.5Z" fill="#1A1A2E"/>
+        <!-- Eyebrows - fierce sharp -->
+        <path d="M15 44 Q23.5 39.5 31 43" stroke="#1A1A2E" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+        <path d="M55 44 Q46.5 39.5 39 43" stroke="#1A1A2E" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+        <!-- Lips - big thick glossy -->
+        <path d="M22 69 Q28 64.5 35 66 Q42 64.5 48 69 Q42 76 35 74.5 Q28 76 22 69Z" fill="#C0172A"/>
+        <path d="M22 69 Q28 65.5 35 66.5 Q42 65.5 48 69" stroke="#8B0015" stroke-width="1.2" fill="none"/>
+        <path d="M26 69.5 Q31 67 35 67.5 Q39 67 44 69.5 L44 70.5 Q39 69 35 69.5 Q31 69 26 70.5Z" fill="#FF6B72" opacity="0.5"/>
+        <!-- Shimmer/highlight on lips -->
+        <ellipse cx="31" cy="69" rx="3" ry="1.2" fill="white" opacity="0.3"/>
+        <!-- Legs -->
+        <rect x="26" y="81" width="6" height="14" rx="3" fill="#C8303A"/>
+        <rect x="38" y="81" width="6" height="14" rx="3" fill="#C8303A"/>
+        <!-- Shoes -->
+        <ellipse cx="29" cy="95" rx="6" ry="3" fill="#1A1A2E"/>
+        <ellipse cx="41" cy="95" rx="6" ry="3" fill="#1A1A2E"/>
+        <!-- Arms -->
+        <rect x="6" y="52" width="14" height="5" rx="2.5" fill="#C8303A" transform="rotate(-20,13,54.5)"/>
+        <rect x="50" y="52" width="14" height="5" rx="2.5" fill="#C8303A" transform="rotate(20,57,54.5)"/>
+      </svg>
+    </div>
+    <h2>¡Bienvenida, baddie!</h2>
+    <p>Completa tu perfil para comenzar a trackear tu ciclo con inteligencia y actitud.</p>
+    <div class="form-group">
+      <label>Tu nombre</label>
+      <input type="text" id="inp-nombre" placeholder="Ej. Valentina" maxlength="30">
+    </div>
+    <div class="form-group">
+      <label>Tu edad</label>
+      <input type="number" id="inp-edad" placeholder="Ej. 26" min="14" max="60">
+    </div>
+    <div class="form-group">
+      <label>Fecha de tu última menstruación</label>
+      <input type="date" id="inp-fecha">
+    </div>
+    <button class="btn-primary" id="btn-ingresar" disabled>Ingresar →</button>
+  </div>
+</div>
+
+<!-- ===================== SCREEN 3,4,5: APP ===================== -->
+<div class="screen" id="screen-app">
+  <nav class="navbar">
+    <div class="nav-brand">Cicla ✦</div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" data-view="home">Inicio</button>
+      <button class="nav-tab" data-view="predictions">Predicciones</button>
+      <button class="nav-tab" data-view="history">Historial</button>
+    </div>
+  </nav>
+
+  <!-- HOME VIEW -->
+  <div class="app-view active" id="view-home">
+    <!-- Greeting -->
+    <div class="greeting-block" id="greeting-block">
+      <svg width="60" height="74" viewBox="0 0 70 86" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+        <path d="M35 5 C35 5 5 38 5 58 C5 74 19 83 35 83 C51 83 65 74 65 58 C65 38 35 5 35 5Z" fill="#FF8A90"/>
+        <path d="M35 5 C35 5 20 38 20 58 C20 68 26 76 35 80" fill="white" opacity="0.25"/>
+        <ellipse cx="24" cy="55" rx="6.5" ry="7" fill="white"/>
+        <ellipse cx="46" cy="55" rx="6.5" ry="7" fill="white"/>
+        <ellipse cx="24.5" cy="55.5" rx="4.2" ry="5" fill="#1E5CB3"/>
+        <ellipse cx="46.5" cy="55.5" rx="4.2" ry="5" fill="#1E5CB3"/>
+        <ellipse cx="24.5" cy="55.5" rx="2.2" ry="2.8" fill="#0A2A6E"/>
+        <ellipse cx="46.5" cy="55.5" rx="2.2" ry="2.8" fill="#0A2A6E"/>
+        <circle cx="25.5" cy="53.8" r="1.1" fill="white"/>
+        <circle cx="47.5" cy="53.8" r="1.1" fill="white"/>
+        <path d="M17 50 Q24 47.5 31 50.5 L33 48 Q25 44.5 17 48Z" fill="#1A1A2E"/>
+        <path d="M31 50.5 L35 47 L33 50.5Z" fill="#1A1A2E"/>
+        <path d="M53 50 Q46 47.5 39 50.5 L37 48 Q45 44.5 53 48Z" fill="#1A1A2E"/>
+        <path d="M39 50.5 L35 47 L37 50.5Z" fill="#1A1A2E"/>
+        <path d="M15 44 Q23.5 39.5 31 43" stroke="#1A1A2E" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+        <path d="M55 44 Q46.5 39.5 39 43" stroke="#1A1A2E" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+        <path d="M22 69 Q28 64.5 35 66 Q42 64.5 48 69 Q42 76 35 74.5 Q28 76 22 69Z" fill="#C0172A"/>
+        <path d="M26 69.5 Q31 67 35 67.5 Q39 67 44 69.5 L44 70.5 Q39 69 35 69.5 Q31 69 26 70.5Z" fill="#FF6B72" opacity="0.5"/>
+        <ellipse cx="31" cy="69" rx="3" ry="1.2" fill="white" opacity="0.3"/>
+        <rect x="26" y="81" width="6" height="10" rx="3" fill="#E87080"/>
+        <rect x="38" y="81" width="6" height="10" rx="3" fill="#E87080"/>
+      </svg>
+      <div class="greeting-text">
+        <h3 id="greeting-text">¡Hola!</h3>
+        <p id="greeting-sub">Cargando tu información...</p>
+      </div>
+    </div>
+
+    <!-- Phase & Days -->
+    <div class="phase-days-row">
+      <div class="phase-chip">
+        <span class="label">Fase actual</span>
+        <span class="value" id="phase-label">—</span>
+      </div>
+      <div class="phase-chip days-chip">
+        <span class="label">Días para período</span>
+        <span class="value" id="days-label">—</span>
+      </div>
+    </div>
+
+    <!-- SOS Button -->
+    <button class="sos-btn" id="btn-sos">🆘 Modo SOS — Día de descanso forzado</button>
+    <div class="sos-tip card" id="sos-tip"></div>
+
+    <!-- Daily Form -->
+    <div class="card">
+      <div class="card-title">Registro del día de hoy</div>
+
+      <div class="question-block">
+        <span class="q-label">¿Cómo te sientes hoy?</span>
+        <div class="options-row" id="opts-estado">
+          <div class="opt-chip" data-val="Ansiedad">Ansiedad</div>
+          <div class="opt-chip" data-val="Irritabilidad">Irritabilidad</div>
+          <div class="opt-chip" data-val="Bajón">Bajón</div>
+          <div class="opt-chip" data-val="Motivada">Motivada</div>
+          <div class="opt-chip" data-val="Enfocada">Enfocada</div>
+        </div>
+      </div>
+
+      <div class="question-block">
+        <span class="q-label">¿Cuántas horas dormiste?</span>
+        <div class="options-row" id="opts-sueno">
+          <div class="opt-chip" data-val="Menos de 6h">Menos de 6h</div>
+          <div class="opt-chip" data-val="6-8h">6-8h</div>
+          <div class="opt-chip" data-val="Más de 8h">Más de 8h</div>
+        </div>
+      </div>
+
+      <div class="question-block">
+        <span class="q-label">¿Cambios físicos?</span>
+        <div class="options-row" id="opts-piel">
+          <div class="opt-chip" data-val="Piel limpia">Piel limpia</div>
+          <div class="opt-chip" data-val="Brote leve">Brote leve</div>
+          <div class="opt-chip" data-val="Brote inflamado/acné">Brote inflamado/acné</div>
+        </div>
+      </div>
+
+      <div class="question-block">
+        <span class="q-label">¿Abundancia del flujo?</span>
+        <div class="options-row" id="opts-flujo">
+          <div class="opt-chip" data-val="Ninguno">Ninguno</div>
+          <div class="opt-chip" data-val="Ligero">Ligero</div>
+          <div class="opt-chip" data-val="Moderado">Moderado</div>
+          <div class="opt-chip" data-val="Abundante">Abundante</div>
+        </div>
+      </div>
+
+      <div class="question-block">
+        <span class="q-label">¿Qué deporte realizaste hoy?</span>
+        <div class="options-row" id="opts-deporte">
+          <div class="opt-chip" data-val="Fuerza/Pesas">Fuerza/Pesas</div>
+          <div class="opt-chip" data-val="Cardio">Cardio</div>
+          <div class="opt-chip" data-val="Descanso">Descanso</div>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="btn-save" style="margin-top:8px">Guardar Registro</button>
+    </div>
+
+    <!-- Athlete Character -->
+    <div class="card">
+      <div class="card-title">Tu atleta interior</div>
+      <div class="char-container">
+        <svg id="athlete-char" class="char-svg" width="160" height="200" viewBox="0 0 160 200" xmlns="http://www.w3.org/2000/svg">
+          <!-- Gym outfit top -->
+          <rect x="42" y="112" width="76" height="50" rx="8" fill="#C8B4E0"/>
+          <rect x="55" y="112" width="20" height="50" fill="#B89FD0"/>
+          <rect x="85" y="112" width="20" height="50" fill="#B89FD0"/>
+          <!-- Shorts -->
+          <rect x="42" y="152" width="34" height="30" rx="6" fill="#9580C0"/>
+          <rect x="84" y="152" width="34" height="30" rx="6" fill="#9580C0"/>
+          <!-- Legs -->
+          <rect x="52" y="178" width="16" height="28" rx="8" fill="#C8303A"/>
+          <rect x="92" y="178" width="16" height="28" rx="8" fill="#C8303A"/>
+          <!-- Shoes -->
+          <ellipse cx="60" cy="207" rx="14" ry="6" fill="#1A1A2E"/>
+          <ellipse cx="100" cy="207" rx="14" ry="6" fill="#1A1A2E"/>
+          <rect x="48" y="202" width="18" height="6" rx="3" fill="#FF6B6B"/>
+          <rect x="94" y="202" width="18" height="6" rx="3" fill="#FF6B6B"/>
+          <!-- Drop body -->
+          <path d="M80 10 C80 10 45 52 45 76 C45 96 61 108 80 108 C99 108 115 96 115 76 C115 52 80 10 80 10Z" fill="#E8404A"/>
+          <path d="M80 10 C80 10 60 52 60 76 C60 88 67 100 80 106" fill="#FF6B72" opacity="0.35"/>
+          <!-- Eyes -->
+          <ellipse cx="67" cy="73" rx="7.5" ry="8" fill="white"/>
+          <ellipse cx="93" cy="73" rx="7.5" ry="8" fill="white"/>
+          <ellipse cx="67.5" cy="73.5" rx="5" ry="6" fill="#1E5CB3"/>
+          <ellipse cx="93.5" cy="73.5" rx="5" ry="6" fill="#1E5CB3"/>
+          <ellipse cx="67.5" cy="73.5" rx="2.8" ry="3.4" fill="#0A2A6E"/>
+          <ellipse cx="93.5" cy="73.5" rx="2.8" ry="3.4" fill="#0A2A6E"/>
+          <circle cx="68.8" cy="71.5" r="1.3" fill="white"/>
+          <circle cx="94.8" cy="71.5" r="1.3" fill="white"/>
+          <!-- Winged liner left -->
+          <path d="M59 67.5 Q67 64.5 74.5 68 L77 65.5 Q68 61.5 59 65Z" fill="#1A1A2E"/>
+          <path d="M74.5 68 L79 64 L77 68Z" fill="#1A1A2E"/>
+          <!-- Winged liner right -->
+          <path d="M101 67.5 Q93 64.5 85.5 68 L83 65.5 Q92 61.5 101 65Z" fill="#1A1A2E"/>
+          <path d="M85.5 68 L81 64 L83 68Z" fill="#1A1A2E"/>
+          <!-- Eyebrows -->
+          <path d="M58 62 Q67.5 56.5 75.5 61" stroke="#1A1A2E" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+          <path d="M102 62 Q92.5 56.5 84.5 61" stroke="#1A1A2E" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+          <!-- Lips -->
+          <path d="M63 90 Q71 84.5 80 86 Q89 84.5 97 90 Q89 98 80 96 Q71 98 63 90Z" fill="#C0172A"/>
+          <path d="M63 90 Q71 85.5 80 87 Q89 85.5 97 90" stroke="#8B0015" stroke-width="1.2" fill="none"/>
+          <path d="M67 90.5 Q74 87.5 80 88.5 Q86 87.5 93 90.5 L93 91.5 Q86 90 80 91 Q74 90 67 91.5Z" fill="#FF6B72" opacity="0.5"/>
+          <ellipse cx="75" cy="89" rx="3.5" ry="1.4" fill="white" opacity="0.35"/>
+          <!-- Arms holding dumbbells -->
+          <rect x="14" y="88" width="36" height="10" rx="5" fill="#C8303A" transform="rotate(-15,32,93)"/>
+          <rect x="110" y="88" width="36" height="10" rx="5" fill="#C8303A" transform="rotate(15,128,93)"/>
+          <!-- Left dumbbell -->
+          <rect x="8" y="94" width="22" height="8" rx="4" fill="#555" transform="rotate(-15,19,98)"/>
+          <rect x="4" y="90" width="8" height="16" rx="3" fill="#333" transform="rotate(-15,8,98)"/>
+          <rect x="22" y="90" width="8" height="16" rx="3" fill="#333" transform="rotate(-15,26,98)"/>
+          <!-- Right dumbbell -->
+          <rect x="130" y="94" width="22" height="8" rx="4" fill="#555" transform="rotate(15,141,98)"/>
+          <rect x="126" y="90" width="8" height="16" rx="3" fill="#333" transform="rotate(15,130,98)"/>
+          <rect x="144" y="90" width="8" height="16" rx="3" fill="#333" transform="rotate(15,148,98)"/>
+          <!-- Sweat drops -->
+          <ellipse cx="120" cy="50" rx="4" ry="6" fill="#ADE8F4" opacity="0.7"/>
+          <ellipse cx="130" cy="62" rx="3" ry="4.5" fill="#ADE8F4" opacity="0.5"/>
+        </svg>
+      </div>
+      <p style="text-align:center;font-size:0.78rem;color:var(--muted);margin-top:-6px">¡Toca para motivarte!</p>
+    </div>
+  </div>
+
+  <!-- PREDICTIONS VIEW -->
+  <div class="app-view" id="view-predictions">
+    <div class="card prediction-card">
+      <div class="card-title">Próximo período estimado</div>
+      <div class="pred-date" id="pred-next-date">—</div>
+      <p style="font-size:0.82rem;color:var(--muted);margin-top:6px" id="pred-days-text">Calculando...</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Timeline del ciclo (28 días)</div>
+      <div class="phase-timeline">
+        <div class="phase-block menstrual">MENS<br>1-5</div>
+        <div class="phase-block folicular">FOLIC<br>6-13</div>
+        <div class="phase-block ovulacion">OVUL<br>14</div>
+        <div class="phase-block lutea">LÚTEA<br>15-28</div>
+      </div>
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:10px;line-height:1.5" id="pred-phase-insight">Calculando fase actual...</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Rendimiento atlético — Recomendación de hoy</div>
+      <div class="sport-advice">
+        <h4 id="sport-advice-title">⚡ Consejo de entrenamiento</h4>
+        <p id="sport-advice-text">Calculando recomendación personalizada...</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Tu adivina del ciclo</div>
+      <div class="char-container">
+        <!-- Fortune teller drop -->
+        <svg id="fortune-char" class="char-svg" width="200" height="220" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+          <!-- Mystic robe -->
+          <path d="M60 115 Q100 108 140 115 L150 200 L50 200Z" fill="#4A2080"/>
+          <path d="M70 115 Q100 110 130 115 L135 200 L65 200Z" fill="#5A2896"/>
+          <!-- Star pattern on robe -->
+          <text x="75" y="150" font-size="14" fill="#FFE680" opacity="0.8">✦</text>
+          <text x="105" y="165" font-size="10" fill="#FFE680" opacity="0.6">✦</text>
+          <text x="88" y="188" font-size="12" fill="#FFE680" opacity="0.7">✦</text>
+          <!-- Mystic hat -->
+          <path d="M68 90 Q100 10 132 90Z" fill="#2A0A6E"/>
+          <ellipse cx="100" cy="90" rx="36" ry="10" fill="#3A1480"/>
+          <text x="88" y="65" font-size="14" fill="#FFE680">✦</text>
+          <!-- Drop body -->
+          <path d="M100 30 C100 30 68 64 68 82 C68 97 83 108 100 108 C117 108 132 97 132 82 C132 64 100 30 100 30Z" fill="#E8404A"/>
+          <path d="M100 30 C100 30 82 64 82 82 C82 92 88 102 100 106" fill="#FF6B72" opacity="0.35"/>
+          <!-- Eyes -->
+          <ellipse cx="88" cy="80" rx="7" ry="7.5" fill="white"/>
+          <ellipse cx="112" cy="80" rx="7" ry="7.5" fill="white"/>
+          <ellipse cx="88.5" cy="80.5" rx="4.5" ry="5.5" fill="#1E5CB3"/>
+          <ellipse cx="112.5" cy="80.5" rx="4.5" ry="5.5" fill="#1E5CB3"/>
+          <ellipse cx="88.5" cy="80.5" rx="2.5" ry="3" fill="#0A2A6E"/>
+          <ellipse cx="112.5" cy="80.5" rx="2.5" ry="3" fill="#0A2A6E"/>
+          <circle cx="89.5" cy="78.8" r="1.2" fill="white"/>
+          <circle cx="113.5" cy="78.8" r="1.2" fill="white"/>
+          <!-- Liner left -->
+          <path d="M81 75 Q88 72 94.5 75.5 L96 73 Q88 69.5 81 72.5Z" fill="#1A1A2E"/>
+          <path d="M94.5 75.5 L98 71 L96 75.5Z" fill="#1A1A2E"/>
+          <!-- Liner right -->
+          <path d="M119 75 Q112 72 105.5 75.5 L104 73 Q112 69.5 119 72.5Z" fill="#1A1A2E"/>
+          <path d="M105.5 75.5 L102 71 L104 75.5Z" fill="#1A1A2E"/>
+          <!-- Eyebrows -->
+          <path d="M80 69.5 Q88.5 64.5 96.5 69" stroke="#1A1A2E" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M120 69.5 Q111.5 64.5 103.5 69" stroke="#1A1A2E" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <!-- Lips -->
+          <path d="M84 97 Q92 92.5 100 93.5 Q108 92.5 116 97 Q108 104 100 103 Q92 104 84 97Z" fill="#C0172A"/>
+          <path d="M88 97.5 Q94 95 100 95.5 Q106 95 112 97.5 L112 98.5 Q106 97 100 97.5 Q94 97 88 98.5Z" fill="#FF6B72" opacity="0.5"/>
+          <ellipse cx="95" cy="96" rx="3" ry="1.2" fill="white" opacity="0.3"/>
+          <!-- Arms with crystal ball -->
+          <rect x="38" y="105" width="38" height="10" rx="5" fill="#C8303A" transform="rotate(-20,57,110)"/>
+          <rect x="124" y="105" width="38" height="10" rx="5" fill="#C8303A" transform="rotate(20,143,110)"/>
+          <!-- Crystal ball -->
+          <circle id="crystal-glow" cx="100" cy="170" r="30" fill="url(#crystalGrad)" stroke="#B89FD0" stroke-width="2"/>
+          <defs>
+            <radialGradient id="crystalGrad" cx="35%" cy="30%">
+              <stop offset="0%" stop-color="#E0D4FF"/>
+              <stop offset="40%" stop-color="#A8B4E8"/>
+              <stop offset="80%" stop-color="#6040B0"/>
+              <stop offset="100%" stop-color="#3A1480"/>
+            </radialGradient>
+          </defs>
+          <!-- Shine on ball -->
+          <ellipse cx="88" cy="158" rx="8" ry="5" fill="white" opacity="0.3"/>
+          <ellipse cx="84" cy="155" rx="4" ry="2.5" fill="white" opacity="0.4"/>
+          <!-- Stars in ball -->
+          <text x="86" y="172" font-size="16" fill="#FFE680" opacity="0.8">✦</text>
+          <text x="102" y="181" font-size="10" fill="#ADE8F4" opacity="0.8">✦</text>
+          <!-- Mystical sparkles -->
+          <circle cx="40" cy="95" r="3" fill="#FFE680" opacity="0.8">
+            <animate attributeName="opacity" values="0.8;0.2;0.8" dur="2s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="160" cy="98" r="4" fill="#FFE680" opacity="0.6">
+            <animate attributeName="opacity" values="0.6;0.1;0.6" dur="1.5s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="30" cy="140" r="2" fill="#ADE8F4" opacity="0.7">
+            <animate attributeName="opacity" values="0.7;0.2;0.7" dur="2.5s" repeatCount="indefinite"/>
+          </circle>
+        </svg>
+      </div>
+      <p style="text-align:center;font-size:0.78rem;color:var(--muted);margin-top:-6px">¡Toca la bola de cristal!</p>
+    </div>
+
+    <div class="card" id="pred-alert" style="display:none;background:linear-gradient(135deg,#FFF5E8,#FFF0E0);border:1px solid rgba(240,200,66,0.4)">
+      <div class="card-title">⚠️ Alerta de retraso</div>
+      <p style="font-size:0.85rem;line-height:1.6" id="pred-alert-text"></p>
+    </div>
+  </div>
+
+  <!-- HISTORY VIEW -->
+  <div class="app-view" id="view-history">
+    <div class="card">
+      <div class="card-title">Calendario del mes</div>
+      <div class="calendar-grid" id="cal-grid"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Registro de logs</div>
+      <div class="history-table-wrap">
+        <table id="history-table">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Fase</th>
+              <th>Ánimo</th>
+              <th>Sueño</th>
+              <th>Piel</th>
+              <th>Flujo</th>
+              <th>Deporte</th>
+            </tr>
+          </thead>
+          <tbody id="history-tbody"></tbody>
+        </table>
+      </div>
+      <div class="no-logs" id="no-logs-msg">No hay registros aún. ¡Empieza hoy!</div>
+    </div>
+
+    <button class="btn-danger" id="btn-reset">🗑️ Borrar todos los datos</button>
+  </div>
+</div>
+
+<!-- AUDIO elements for sfx -->
+<audio id="sax-chime" preload="none">
+  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" type="audio/mpeg">
+</audio>
+
 <script>
-const MES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-const DIAS = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+// ===================================================
+// DATA & HELPERS
+// ===================================================
+const LS_KEY = 'cicla_user';
+const LS_LOGS = 'cicla_logs';
 
-let CAL_V = new Date();
-let DATA = { dur:28, pdur:5, last:null };
+function getUser() {
+  try { return JSON.parse(localStorage.getItem(LS_KEY)); } catch(e) { return null; }
+}
+function getLogs() {
+  try { return JSON.parse(localStorage.getItem(LS_LOGS)) || []; } catch(e) { return []; }
+}
+function saveUser(u) { localStorage.setItem(LS_KEY, JSON.stringify(u)); }
+function saveLogs(l) { localStorage.setItem(LS_LOGS, JSON.stringify(l)); }
 
-// Default: last period 12 days ago
-const def = new Date(); def.setDate(def.getDate()-12);
-document.getElementById('lstart').value = def.toISOString().slice(0,10);
+function todayStr() {
+  return new Date().toISOString().split('T')[0];
+}
 
-function fmt(d) { return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; }
+function daysBetween(d1, d2) {
+  return Math.round((new Date(d2) - new Date(d1)) / 86400000);
+}
 
-function go() {
-  const dur  = parseInt(document.getElementById('cdur').value)  || 28;
-  const pdur = parseInt(document.getElementById('pdur').value)  || 5;
-  const ls   = document.getElementById('lstart').value;
-  if (!ls) { alert('Ingresa la fecha de tu último período'); return; }
+function addDays(dateStr, n) {
+  const d = new Date(dateStr);
+  d.setDate(d.getDate() + n);
+  return d.toISOString().split('T')[0];
+}
 
-  DATA.dur  = dur;
-  DATA.pdur = pdur;
-  DATA.last = new Date(ls + 'T00:00:00');
+function fmtDate(str) {
+  if (!str) return '—';
+  const d = new Date(str + 'T12:00:00');
+  return d.toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' });
+}
 
-  const today = new Date(); today.setHours(0,0,0,0);
-  const next  = new Date(DATA.last); next.setDate(next.getDate() + dur);
-  const ovul  = new Date(next); ovul.setDate(ovul.getDate() - 14);
-  const fstart= new Date(ovul); fstart.setDate(fstart.getDate() - 3);
-  const fend  = new Date(ovul); fend.setDate(fend.getDate() + 3);
+function getCyclePhase(lastPeriod) {
+  const today = new Date().toISOString().split('T')[0];
+  const dayInCycle = ((daysBetween(lastPeriod, today) % 28) + 28) % 28 + 1;
+  if (dayInCycle <= 5) return { name: 'Menstrual', day: dayInCycle, short: 'MENS' };
+  if (dayInCycle <= 13) return { name: 'Folicular', day: dayInCycle, short: 'FOLIC' };
+  if (dayInCycle === 14) return { name: 'Ovulación', day: dayInCycle, short: 'OVUL' };
+  return { name: 'Lútea', day: dayInCycle, short: 'LÚTEA' };
+}
 
-  const dtn   = Math.round((next - today) / 864e5);
-  const cd    = Math.round((today - DATA.last) / 864e5) + 1;
-  const cdCl  = Math.min(Math.max(cd,1), dur);
+function getNextPeriod(lastPeriod) {
+  const today = new Date().toISOString().split('T')[0];
+  const dayInCycle = ((daysBetween(lastPeriod, today) % 28) + 28) % 28 + 1;
+  const daysLeft = 29 - dayInCycle;
+  return { date: addDays(today, daysLeft), daysLeft };
+}
 
-  // Date line
-  const dow = today.getDay();
-  document.getElementById('date-line').textContent =
-    `${DIAS[dow===0?6:dow-1]}, ${today.getDate()} de ${MES[today.getMonth()]} ${today.getFullYear()}`;
-
-  // Phase
-  let pName, pIco, pColor, pDesc, pTags, pTagCls;
-  if (cdCl <= pdur) {
-    pName='Fase Menstrual'; pIco='🔴'; pColor='#FADADD';
-    pDesc='Tiempo sagrado de descanso, introspección y autocuidado profundo. Tu cuerpo hace algo extraordinario.';
-    pTags=['Descanso','Calor','Nutrición']; pTagCls='r';
-  } else if (cdCl <= 13) {
-    pName='Fase Folicular'; pIco='🌱'; pColor='#DFF0E8';
-    pDesc='Energía en ascenso, creatividad floreciente, optimismo natural. El mundo está abierto para ti.';
-    pTags=['Creatividad','Ejercicio','Proyectos']; pTagCls='g';
-  } else if (cdCl <= 16) {
-    pName='Ovulación'; pIco='🥚'; pColor='#FDEBD0';
-    pDesc='Pico de vitalidad, fertilidad y carisma. Estás en tu máximo poder. ¡Brilla con todo!';
-    pTags=['Vitalidad','Fertilidad','Poder']; pTagCls='d';
-  } else {
-    pName='Fase Lútea'; pIco='🌙'; pColor='#EDE0F7';
-    pDesc='Intuición poderosa, sensibilidad elevada. Honra tu necesidad de quietud y autocuidado.';
-    pTags=['Journaling','Calma','Magnesio']; pTagCls='l';
+const SPORT_ADVICE = {
+  'Menstrual': {
+    title: '🩸 Fase Menstrual — Escucha tu cuerpo',
+    text: 'Tu cuerpo está en máxima regeneración. Prioriza movilidad suave, yoga o caminatas ligeras. Los estrógenos y progesterona están al mínimo: no fuerces el rendimiento. Hidratación doble y magnesio son tus aliados ahora.'
+  },
+  'Folicular': {
+    title: '⚡ Fase Folicular — Tu ventana de poder',
+    text: 'Los estrógenos suben y el dolor muscular disminuye hasta un 30%. Es tu mejor momento para cargas máximas, nuevos PRs y entrenamientos de alta intensidad. Tu recuperación muscular es óptima ahora: apróvechala.'
+  },
+  'Ovulación': {
+    title: '🔥 Ovulación — Pico de energía absoluto',
+    text: 'Pico máximo de estrógenos y testosterona. Fuerza, velocidad y coordinación están en su punto más alto. Ideal para levantamiento olímpico, sprints o competencias. Tu umbral de dolor es más alto hoy.'
+  },
+  'Lútea': {
+    title: '🌙 Fase Lútea — Gestión inteligente de cargas',
+    text: 'La progesterona sube y la temperatura corporal aumenta ~0.5°C, lo que eleva el esfuerzo percibido. Las cargas se sentirán hasta un 20% más pesadas. Reduce el volumen, mantén la intensidad moderada y evita cambios bruscos de postura para controlar mareos. Prioriza proteína post-entreno.'
   }
+};
 
-  const banner = document.getElementById('banner');
-  banner.style.background = `linear-gradient(135deg,${pColor},#fff)`;
-  banner.innerHTML = `
-    <div class="ph-icon">${pIco}</div>
-    <div class="ph-info"><h2>${pName}</h2><p>${pDesc}</p></div>
-    <div class="ph-day"><div class="n">${Math.max(0,cdCl)}</div><div class="l">día del<br>ciclo</div></div>`;
+const GREETINGS = {
+  'Menstrual': (n) => ({ h: `Descansa con honra, ${n}.`, s: 'Tu cuerpo hace un trabajo increíble. Hoy se trata de recuperación, no rendimiento.' }),
+  'Folicular': (n) => ({ h: `¡Con toda hoy, ${n}!`, s: 'Tus estrógenos van para arriba. Gran día para empujar pesado en fuerza.' }),
+  'Ovulación': (n) => ({ h: `Pico de poder, ${n}.`, s: 'Ovulación activa: tu energía y fuerza están en el máximo absoluto. ¡Es tu momento!' }),
+  'Lútea': (n) => ({ h: `Con cabeza fría, ${n}.`, s: 'Fase lútea: cuida las cargas, duerme bien, y no te juzgues si el ánimo fluctúa. Tu cuerpo trabaja en background.' })
+};
 
-  // Cards
-  document.getElementById('c1').textContent = Math.max(0,dtn);
-  document.getElementById('c2').textContent = fmt(next);
-  document.getElementById('c3').textContent = fmt(ovul);
-  document.getElementById('c3s').textContent = `Día ${dur-14} del ciclo`;
-  document.getElementById('c4').textContent = `${fmt(fstart)} → ${fmt(fend)}`;
-  document.getElementById('c5').textContent = Math.max(0,cdCl);
-  document.getElementById('c5t').textContent = dur;
+const MOOD_COLORS = {
+  'Motivada': { 'Fuerza/Pesas': '#A8D8C8', 'Cardio': '#90D0C0', 'Descanso': '#B8E8D8' },
+  'Enfocada': { 'Fuerza/Pesas': '#A8C8D8', 'Cardio': '#90B8D0', 'Descanso': '#B8D8E8' },
+  'Ansiedad': { 'Fuerza/Pesas': '#D8B8D8', 'Cardio': '#C8A8C8', 'Descanso': '#E0C8E0' },
+  'Irritabilidad': { 'Fuerza/Pesas': '#D8C8B8', 'Cardio': '#C8B8A8', 'Descanso': '#E0D8C8' },
+  'Bajón': { 'Fuerza/Pesas': '#C8B8C8', 'Cardio': '#B8A8B8', 'Descanso': '#D8C8D8' }
+};
 
-  const c6 = document.getElementById('c6');
-  if (dtn <= 0) { c6.textContent='🔴 ¡Período aquí!'; c6.className='card-val sm badge hot'; }
-  else if (dtn <= 3) { c6.textContent=`🔔 En ${dtn} días`; c6.className='card-val sm badge hot'; }
-  else if (dtn <= 7) { c6.textContent='💕 Esta semana'; c6.className='card-val sm badge warn'; }
-  else if (today >= fstart && today <= fend) { c6.textContent='🌟 Días fértiles'; c6.className='card-val sm badge ok'; }
-  else { c6.textContent='✅ Todo bien'; c6.className='card-val sm badge ok'; }
+// ===================================================
+// SCREEN 1: WELCOME GAME
+// ===================================================
+const canvas = document.getElementById('game-canvas');
+const ctx = canvas.getContext('2d');
+let dropX = 100, dropY = 100;
+let vx = 3.2, vy = 2.8;
+let animFrame;
+let gameActive = true;
 
-  // Cursor
-  const prog = ((cdCl-1)/dur)*100;
-  document.getElementById('cur').style.left = `${Math.min(prog,97)}%`;
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
 
-  // Stats
-  document.getElementById('s1').textContent = `${dur} días`;
-  document.getElementById('s2').textContent = `${pdur} días`;
-  document.getElementById('s3').textContent = `Día ${dur-14}`;
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
 
-  // Fertility gauge
-  const dtoOvul = Math.round((ovul-today)/864e5);
-  let fertPct = 5;
-  if (today >= fstart && today <= fend) { fertPct = Math.abs(dtoOvul)<=1 ? 95 : 78; }
-  else if (Math.abs(dtoOvul) <= 5) fertPct = 40;
-  else fertPct = 8;
+// Bichiyal blood drop drawn on canvas
+function drawDropOnCanvas(x, y, scale = 1) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(scale, scale);
 
-  const total = 230;
-  document.getElementById('garc').style.strokeDashoffset = total - (fertPct/100)*total;
-  document.getElementById('gpct').textContent = `${fertPct}%`;
-  const angle = -90 + (fertPct/100)*180;
-  document.getElementById('needle').style.transform = `rotate(${angle}deg)`;
-  document.getElementById('glbl').textContent = fertPct > 70 ? 'Alta fertilidad 🌟' : fertPct > 30 ? 'Fertilidad moderada' : 'Baja fertilidad';
-  document.getElementById('gsub').textContent = fertPct > 70 ? 'Estás en tu ventana fértil ✨' : fertPct > 30 ? 'Cerca de días fértiles' : 'Fuera de ventana fértil';
+  const s = 0.9;
 
-  // Tags
-  const tagMap = {
-    'Fase Menstrual': [['Descanso','r'],['Calor','r'],['Hierro','r'],['Vitamina C','d'],['Yoga suave','g']],
-    'Fase Folicular': [['Energía','g'],['Proyectos','g'],['Proteínas','d'],['Social','l'],['Cardio','g']],
-    'Ovulación':     [['Fertilidad','d'],['Carisma','r'],['Omega-3','g'],['Poder','l'],['HIIT','d']],
-    'Fase Lútea':    [['Magnesio','l'],['Journaling','l'],['Límites','r'],['Pilates','g'],['Menos cafeína','d']],
-  };
-  const tb = document.getElementById('tagsbox');
-  tb.innerHTML = '';
-  (tagMap[pName]||[]).forEach(([t,c])=>{ const s=document.createElement('span'); s.className=`tag ${c}`; s.textContent=t; tb.appendChild(s); });
+  // Drop body
+  ctx.beginPath();
+  ctx.moveTo(0, -50 * s);
+  ctx.bezierCurveTo(-40 * s, -10 * s, -38 * s, 30 * s, -28 * s, 45 * s);
+  ctx.bezierCurveTo(-14 * s, 60 * s, 14 * s, 60 * s, 28 * s, 45 * s);
+  ctx.bezierCurveTo(38 * s, 30 * s, 40 * s, -10 * s, 0, -50 * s);
+  ctx.fillStyle = '#E8404A';
+  ctx.fill();
+  // Shine
+  ctx.beginPath();
+  ctx.moveTo(-5 * s, -48 * s);
+  ctx.bezierCurveTo(-25 * s, -15 * s, -30 * s, 10 * s, -22 * s, 38 * s);
+  ctx.lineWidth = 0;
+  ctx.fillStyle = 'rgba(255,160,165,0.3)';
+  ctx.fill();
 
-  // Insights
-  const insData = [
-    { ico:'🍫', lbl:'Antojos', txt: cdCl >= dur-7
-        ? 'Los antojos de azúcar suelen aumentar en la fase lútea. Prueba magnesio y proteínas para reducirlos.'
-        : 'Tus antojos son parte del ciclo. Escucha tu cuerpo con compasión.', bg:'var(--rosa)' },
-    { ico:'⚡', lbl:'Energía', txt: cdCl <= 13 && cdCl > pdur
-        ? '¡Aprovecha esta energía! Estás en tu fase de mayor vitalidad y claridad mental.'
-        : cdCl > 16 ? 'La energía disminuye en la fase lútea. Es normal. Descansa sin culpa.'
-        : 'Tu energía está sincronizada con tus hormonas. Cada fase tiene su ritmo.', bg:'var(--lila)' },
-    { ico:'😴', lbl:'Sueño', txt: cdCl >= dur-5
-        ? 'El sueño puede verse afectado antes del período por la caída de progesterona. Magnesio y rutinas ayudan.'
-        : 'Tu sueño debería ser más estable en esta fase. Sigue registrando para detectar patrones.', bg:'var(--durazno)' },
-    { ico:'💕', lbl:'Emociones', txt: pName==='Fase Lútea'
-        ? 'Tu sensibilidad está elevada. Es normal y poderosa — tu intuición es más aguda que nunca.'
-        : pName==='Ovulación' ? 'Seguridad y carisma en su máximo. ¡Es un buen momento para conectar!'
-        : 'Honra cómo te sientes. Tus emociones son información hormonal, no debilidades.', bg:'var(--menta)' },
-  ];
-  const ig = document.getElementById('insights');
-  ig.innerHTML = '';
-  insData.forEach(({ico,lbl,txt,bg})=>{
-    ig.innerHTML += `<div class="insight" style="background:${bg}"><div class="insight-ico">${ico}</div><div class="insight-lbl">${lbl}</div><div class="insight-text">${txt}</div></div>`;
+  // Eyes whites
+  ctx.fillStyle = 'white';
+  ctx.beginPath(); ctx.ellipse(-13 * s, 8 * s, 8 * s, 9 * s, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(13 * s, 8 * s, 8 * s, 9 * s, 0, 0, Math.PI * 2); ctx.fill();
+
+  // Irises - fierce blue
+  ctx.fillStyle = '#1E5CB3';
+  ctx.beginPath(); ctx.ellipse(-13 * s, 8.5 * s, 5.5 * s, 6.5 * s, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(13 * s, 8.5 * s, 5.5 * s, 6.5 * s, 0, 0, Math.PI * 2); ctx.fill();
+
+  // Pupils
+  ctx.fillStyle = '#0A2A6E';
+  ctx.beginPath(); ctx.ellipse(-13 * s, 8.5 * s, 3 * s, 3.5 * s, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(13 * s, 8.5 * s, 3 * s, 3.5 * s, 0, 0, Math.PI * 2); ctx.fill();
+
+  // Eye shine
+  ctx.fillStyle = 'white';
+  ctx.beginPath(); ctx.arc(-11.5 * s, 6.5 * s, 1.5 * s, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(14.5 * s, 6.5 * s, 1.5 * s, 0, Math.PI * 2); ctx.fill();
+
+  // Winged eyeliner
+  ctx.fillStyle = '#1A1A2E';
+  ctx.beginPath();
+  ctx.moveTo(-22 * s, 2.5 * s);
+  ctx.quadraticCurveTo(-13 * s, -0.5 * s, -5 * s, 3.5 * s);
+  ctx.lineTo(-3 * s, 1 * s);
+  ctx.quadraticCurveTo(-12 * s, -4 * s, -22 * s, -1 * s);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-5 * s, 3.5 * s); ctx.lineTo(-1 * s, -0.5 * s); ctx.lineTo(-3 * s, 3.5 * s); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(22 * s, 2.5 * s);
+  ctx.quadraticCurveTo(13 * s, -0.5 * s, 5 * s, 3.5 * s);
+  ctx.lineTo(3 * s, 1 * s);
+  ctx.quadraticCurveTo(12 * s, -4 * s, 22 * s, -1 * s);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(5 * s, 3.5 * s); ctx.lineTo(1 * s, -0.5 * s); ctx.lineTo(3 * s, 3.5 * s); ctx.fill();
+
+  // Eyebrows - thick fierce
+  ctx.strokeStyle = '#1A1A2E';
+  ctx.lineWidth = 4 * s;
+  ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(-24 * s, -5 * s); ctx.quadraticCurveTo(-13 * s, -12 * s, -4 * s, -7 * s); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(24 * s, -5 * s); ctx.quadraticCurveTo(13 * s, -12 * s, 4 * s, -7 * s); ctx.stroke();
+
+  // Thick glossy lips
+  ctx.fillStyle = '#C0172A';
+  ctx.beginPath();
+  ctx.moveTo(-18 * s, 28 * s);
+  ctx.quadraticCurveTo(-8 * s, 22 * s, 0, 23.5 * s);
+  ctx.quadraticCurveTo(8 * s, 22 * s, 18 * s, 28 * s);
+  ctx.quadraticCurveTo(8 * s, 37 * s, 0, 35 * s);
+  ctx.quadraticCurveTo(-8 * s, 37 * s, -18 * s, 28 * s);
+  ctx.fill();
+  // Lip gloss highlight
+  ctx.fillStyle = 'rgba(255,255,255,0.28)';
+  ctx.beginPath();
+  ctx.ellipse(-6 * s, 26 * s, 5 * s, 2 * s, 0, 0, Math.PI * 2); ctx.fill();
+
+  // Legs
+  ctx.fillStyle = '#C8303A';
+  ctx.beginPath(); ctx.roundRect(-12 * s, 57 * s, 10 * s, 18 * s, 5 * s); ctx.fill();
+  ctx.beginPath(); ctx.roundRect(2 * s, 57 * s, 10 * s, 18 * s, 5 * s); ctx.fill();
+  // Shoes
+  ctx.fillStyle = '#1A1A2E';
+  ctx.beginPath(); ctx.ellipse(-7 * s, 76 * s, 9 * s, 4 * s, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(7 * s, 76 * s, 9 * s, 4 * s, 0, 0, Math.PI * 2); ctx.fill();
+
+  // Arms
+  ctx.fillStyle = '#C8303A';
+  ctx.save(); ctx.translate(-22 * s, 14 * s); ctx.rotate(-0.4);
+  ctx.beginPath(); ctx.roundRect(0, -4 * s, 18 * s, 8 * s, 4 * s); ctx.fill(); ctx.restore();
+  ctx.save(); ctx.translate(4 * s, 14 * s); ctx.rotate(0.4);
+  ctx.beginPath(); ctx.roundRect(0, -4 * s, 18 * s, 8 * s, 4 * s); ctx.fill(); ctx.restore();
+
+  // Sign
+  const sw = 70 * s, sh = 30 * s;
+  const sx = 20 * s, sy = 5 * s;
+  // Wooden sign
+  ctx.fillStyle = '#C4933A';
+  ctx.beginPath(); ctx.roundRect(sx, sy, sw, sh, 6 * s); ctx.fill();
+  ctx.strokeStyle = '#8B6020'; ctx.lineWidth = 2 * s;
+  ctx.beginPath(); ctx.roundRect(sx, sy, sw, sh, 6 * s); ctx.stroke();
+  // Wood grain lines
+  ctx.strokeStyle = 'rgba(140,95,30,0.3)'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(sx+8*s, sy+4*s); ctx.lineTo(sx+8*s, sy+sh-4*s); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(sx+20*s, sy+4*s); ctx.lineTo(sx+20*s, sy+sh-4*s); ctx.stroke();
+  // Sign text
+  ctx.fillStyle = '#2A1000';
+  ctx.font = `bold ${13 * s}px 'DM Sans', sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillText('Iniciar', sx + sw / 2, sy + sh / 1.7);
+  ctx.restore();
+}
+
+function gameLoop() {
+  if (!gameActive) return;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Bounce off edges
+  if (dropX + vx > canvas.width - 55 || dropX + vx < 55) vx = -vx;
+  if (dropY + vy > canvas.height - 90 || dropY + vy < 60) vy = -vy;
+  dropX += vx;
+  dropY += vy;
+
+  drawDropOnCanvas(dropX, dropY);
+  animFrame = requestAnimationFrame(gameLoop);
+}
+
+// Slightly increase speed every second for challenge
+let speedTimer = setInterval(() => {
+  if (!gameActive) { clearInterval(speedTimer); return; }
+  const mag = Math.sqrt(vx*vx + vy*vy);
+  if (mag < 7) { vx *= 1.06; vy *= 1.06; }
+}, 3000);
+
+// Click detection on canvas
+canvas.addEventListener('click', function(e) {
+  if (!gameActive) return;
+  const rect = canvas.getBoundingClientRect();
+  const cx = e.clientX - rect.left;
+  const cy = e.clientY - rect.top;
+  // Hit box: 90x155 around drop position
+  if (Math.abs(cx - dropX) < 55 && Math.abs(cy - dropY) < 80) {
+    triggerGatesOpen();
+  }
+});
+
+canvas.addEventListener('touchstart', function(e) {
+  if (!gameActive) return;
+  const t = e.touches[0];
+  const rect = canvas.getBoundingClientRect();
+  const cx = t.clientX - rect.left;
+  const cy = t.clientY - rect.top;
+  if (Math.abs(cx - dropX) < 65 && Math.abs(cy - dropY) < 90) {
+    triggerGatesOpen();
+  }
+}, { passive: true });
+
+function triggerGatesOpen() {
+  gameActive = false;
+  cancelAnimationFrame(animFrame);
+  clearInterval(speedTimer);
+
+  // Stop music, play sfx
+  try { document.getElementById('bg-music').pause(); } catch(e) {}
+  try {
+    const sfx = document.getElementById('click-sfx');
+    sfx.volume = 0.4;
+    sfx.play().catch(() => {});
+  } catch(e) {}
+
+  // Show and open gates
+  const gates = document.getElementById('golden-gates');
+  gates.style.display = 'flex';
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      gates.classList.add('open');
+    });
   });
 
-  renderCal();
-  animBars();
+  setTimeout(() => {
+    goToNextScreen();
+  }, 1500);
 }
 
-function animBars() {
-  setTimeout(()=>{
-    document.getElementById('b1').style.width='72%';
-    document.getElementById('b2').style.width='58%';
-    document.getElementById('b3').style.width='45%';
-    document.getElementById('b4').style.width='61%';
-    document.getElementById('b5').style.width='80%';
-    document.getElementById('b6').style.width='38%';
-  }, 350);
-}
-
-function getDayClass(date) {
-  if (!DATA.last) return '';
-  const today = new Date(); today.setHours(0,0,0,0);
-  const d = new Date(date); d.setHours(0,0,0,0);
-  if (d.getTime()===today.getTime()) return 'today';
-
-  const next  = new Date(DATA.last); next.setDate(next.getDate()+DATA.dur);
-  const ovul  = new Date(next); ovul.setDate(ovul.getDate()-14);
-  const fst   = new Date(ovul); fst.setDate(fst.getDate()-3);
-  const fen   = new Date(ovul); fen.setDate(fen.getDate()+3);
-  const lend  = new Date(DATA.last); lend.setDate(lend.getDate()+DATA.pdur-1);
-  const nend  = new Date(next); nend.setDate(nend.getDate()+DATA.pdur-1);
-
-  if ((d>=DATA.last&&d<=lend)||(d>=next&&d<=nend)) return 'period';
-  if (d.getTime()===ovul.getTime()) return 'ovulation';
-  if (d>=fst&&d<=fen) return 'fertile';
-  const cd = ((d-DATA.last)/864e5|0)+1;
-  const cm = ((cd-1)%DATA.dur)+1;
-  if (cm>DATA.pdur&&cm<=13) return 'folicular';
-  if (cm>16) return 'luteal';
-  return '';
-}
-
-function renderCal() {
-  const y=CAL_V.getFullYear(), m=CAL_V.getMonth();
-  document.getElementById('cal-title').textContent=`${MES[m]} ${y}`;
-  const first=new Date(y,m,1), last=new Date(y,m+1,0);
-  let sdow=first.getDay(); sdow=sdow===0?6:sdow-1;
-  const g=document.getElementById('cal'); g.innerHTML='';
-  for(let i=0;i<sdow;i++){const e=document.createElement('div');e.className='day emp';g.appendChild(e);}
-  for(let d=1;d<=last.getDate();d++){
-    const cell=document.createElement('div');
-    const dt=new Date(y,m,d);
-    const cls=getDayClass(dt);
-    cell.className=`day ${cls}`;
-    cell.textContent=d;
-    if(cls&&cls!=='emp') cell.title={period:'Período',fertile:'Fértil',ovulation:'Ovulación',folicular:'Folicular',luteal:'Lútea',today:'Hoy'}[cls]||'';
-    g.appendChild(cell);
+function goToNextScreen() {
+  const user = getUser();
+  if (user && user.nombre) {
+    showScreen('screen-app');
+    initApp();
+  } else {
+    showScreen('screen-onboarding');
   }
 }
 
-function cm(dir){CAL_V.setMonth(CAL_V.getMonth()+dir);renderCal();}
+// ===================================================
+// SCREEN MANAGEMENT
+// ===================================================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
 
-go();
+// ===================================================
+// SCREEN 2: ONBOARDING
+// ===================================================
+const inpNombre = document.getElementById('inp-nombre');
+const inpEdad = document.getElementById('inp-edad');
+const inpFecha = document.getElementById('inp-fecha');
+const btnIngresar = document.getElementById('btn-ingresar');
+
+// Set max date for last period
+inpFecha.max = todayStr();
+
+function checkOnboardForm() {
+  const ok = inpNombre.value.trim().length > 1
+    && inpEdad.value && parseInt(inpEdad.value) >= 14 && parseInt(inpEdad.value) <= 60
+    && inpFecha.value;
+  btnIngresar.disabled = !ok;
+}
+
+[inpNombre, inpEdad, inpFecha].forEach(el => el.addEventListener('input', checkOnboardForm));
+
+btnIngresar.addEventListener('click', () => {
+  const user = {
+    nombre: inpNombre.value.trim(),
+    edad: parseInt(inpEdad.value),
+    lastPeriod: inpFecha.value
+  };
+  saveUser(user);
+  showScreen('screen-app');
+  initApp();
+});
+
+// ===================================================
+// SCREEN 3,4,5: APP
+// ===================================================
+let currentView = 'home';
+
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const v = tab.dataset.view;
+    document.querySelectorAll('.app-view').forEach(a => a.classList.remove('active'));
+    document.getElementById('view-' + v).classList.add('active');
+    currentView = v;
+    if (v === 'predictions') refreshPredictions();
+    if (v === 'history') refreshHistory();
+  });
+});
+
+function initApp() {
+  refreshHome();
+  refreshPredictions();
+  refreshHistory();
+  // Start bg music softly
+  try {
+    const m = document.getElementById('bg-music');
+    m.volume = 0.15;
+    m.play().catch(() => {});
+  } catch(e) {}
+}
+
+// ===== CHIP SELECTION =====
+document.querySelectorAll('.options-row').forEach(row => {
+  row.querySelectorAll('.opt-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      row.querySelectorAll('.opt-chip').forEach(c => c.classList.remove('selected'));
+      chip.classList.add('selected');
+    });
+  });
+});
+
+function getSelected(id) {
+  const el = document.querySelector(`#${id} .opt-chip.selected`);
+  return el ? el.dataset.val : null;
+}
+
+// ===== SOS =====
+document.getElementById('btn-sos').addEventListener('click', () => {
+  const user = getUser();
+  const logs = getLogs();
+  const phase = user ? getCyclePhase(user.lastPeriod) : { name: 'Lútea' };
+  const sosTips = {
+    'Menstrual': 'Hoy es un día de honrar tu cuerpo. Agua caliente, magnesio, y si puedes: una siesta. Nada que necesite tu mejor rendimiento hoy. Tu única tarea es descansar.',
+    'Folicular': 'Incluso las atletas de élite tienen días duros. Un día de descanso activo en fase folicular no pierde progreso. Estira suave, hidrátate bien y vuelves mañana con más fuerza.',
+    'Ovulación': 'Tu cuerpo dice basta aunque la energía suela ser alta en ovulación. Escúchalo. Descansa y mañana aprovecharás el pico con todo.',
+    'Lútea': 'La fase lútea agota más de lo que parece. Tu sistema nervioso central ya trabaja más duro. Hoy: caldito, descanso y sin culpa. El descanso es parte del entrenamiento.'
+  };
+  const log = {
+    fecha: todayStr(),
+    fase: phase.name,
+    estado: 'SOS',
+    sueno: '—',
+    piel: '—',
+    flujo: '—',
+    deporte: 'Descanso',
+    sos: true
+  };
+  const idx = logs.findIndex(l => l.fecha === todayStr());
+  if (idx >= 0) logs[idx] = log; else logs.push(log);
+  saveLogs(logs);
+  const tipEl = document.getElementById('sos-tip');
+  tipEl.textContent = sosTips[phase.name] || sosTips['Lútea'];
+  tipEl.classList.add('show');
+  showToast('🆘 Modo SOS activado. ¡Descansa sin culpa!');
+  refreshHistory();
+});
+
+// ===== SAVE LOG =====
+document.getElementById('btn-save').addEventListener('click', () => {
+  const estado = getSelected('opts-estado');
+  const sueno = getSelected('opts-sueno');
+  const piel = getSelected('opts-piel');
+  const flujo = getSelected('opts-flujo');
+  const deporte = getSelected('opts-deporte');
+
+  if (!estado || !sueno || !piel || !flujo || !deporte) {
+    alert('Por favor responde todas las preguntas antes de guardar.');
+    return;
+  }
+
+  const user = getUser();
+  const phase = user ? getCyclePhase(user.lastPeriod) : { name: '—' };
+  const logs = getLogs();
+  const log = {
+    fecha: todayStr(),
+    fase: phase.name,
+    estado, sueno, piel, flujo, deporte
+  };
+  const idx = logs.findIndex(l => l.fecha === todayStr());
+  if (idx >= 0) logs[idx] = log; else logs.push(log);
+  saveLogs(logs);
+
+  // Update lastPeriod if flow detected
+  if (flujo === 'Ligero' || flujo === 'Moderado' || flujo === 'Abundante') {
+    if (user) {
+      const daysSince = daysBetween(user.lastPeriod, todayStr());
+      if (daysSince > 20) {
+        user.lastPeriod = todayStr();
+        saveUser(user);
+      }
+    }
+  }
+
+  showToast('✓ Registro guardado con éxito');
+  refreshHome();
+  refreshPredictions();
+  refreshHistory();
+
+  // Clear selections
+  document.querySelectorAll('.opt-chip').forEach(c => c.classList.remove('selected'));
+});
+
+// ===== REFRESH HOME =====
+function refreshHome() {
+  const user = getUser();
+  if (!user) return;
+  const logs = getLogs();
+  const phase = getCyclePhase(user.lastPeriod);
+  const next = getNextPeriod(user.lastPeriod);
+  const yesterday = addDays(todayStr(), -1);
+  const yLog = logs.find(l => l.fecha === yesterday);
+
+  document.getElementById('phase-label').textContent = phase.name;
+  document.getElementById('days-label').textContent = next.daysLeft + ' días';
+
+  const greetFn = GREETINGS[phase.name] || GREETINGS['Lútea'];
+  let { h, s } = greetFn(user.nombre);
+
+  if (yLog) {
+    if (yLog.estado === 'Ansiedad') s += ' Ayer registraste ansiedad — hoy tómatelo con gentileza contigo.';
+    if (yLog.piel === 'Brote inflamado/acné') s += ' Tu piel tuvo un brote ayer, es hormonal y pasará.';
+  }
+
+  document.getElementById('greeting-text').textContent = h;
+  document.getElementById('greeting-sub').textContent = s;
+}
+
+// ===== REFRESH PREDICTIONS =====
+function refreshPredictions() {
+  const user = getUser();
+  if (!user) return;
+  const phase = getCyclePhase(user.lastPeriod);
+  const next = getNextPeriod(user.lastPeriod);
+
+  document.getElementById('pred-next-date').textContent = fmtDate(next.date);
+  document.getElementById('pred-days-text').textContent = `Faltan ${next.daysLeft} días para tu próximo período estimado (ciclo base: 28 días).`;
+
+  const insight = {
+    'Menstrual': 'Estás en la fase menstrual (días 1–5). Estrógenos y progesterona en niveles mínimos. El endometrio se desprende. Prioriza descanso.',
+    'Folicular': `Fase folicular (días 6–13). Los estrógenos aumentan progresivamente, mejorando energía, humor y capacidad de recuperación muscular.`,
+    'Ovulación': 'Ovulación (día 14 aprox). Pico máximo de estrógenos y LH. Ventana de fertilidad activa. Energía y libido en su punto más alto.',
+    'Lútea': 'Fase lútea (días 15–28). La progesterona domina, preparando el útero. El síndrome premenstrual puede aparecer en los últimos días.'
+  };
+  document.getElementById('pred-phase-insight').textContent = `Día ${phase.day} del ciclo — Fase ${phase.name}. ${insight[phase.name]}`;
+
+  const adv = SPORT_ADVICE[phase.name] || SPORT_ADVICE['Lútea'];
+  document.getElementById('sport-advice-title').textContent = adv.title;
+  document.getElementById('sport-advice-text').textContent = adv.text;
+
+  // Delay alert
+  const alertEl = document.getElementById('pred-alert');
+  if (next.daysLeft < 0) {
+    alertEl.style.display = 'block';
+    document.getElementById('pred-alert-text').textContent =
+      `Tu período estimado ya tiene ${Math.abs(next.daysLeft)} días de retraso. El estrés, cambios de peso, o variaciones en el ciclo pueden causar esto. Si el retraso supera 7 días, considera consultar con tu ginecóloga.`;
+  } else {
+    alertEl.style.display = 'none';
+  }
+}
+
+// ===== REFRESH HISTORY =====
+function refreshHistory() {
+  const logs = getLogs();
+  const tbody = document.getElementById('history-tbody');
+  const noMsg = document.getElementById('no-logs-msg');
+
+  tbody.innerHTML = '';
+  if (logs.length === 0) {
+    noMsg.style.display = 'block';
+  } else {
+    noMsg.style.display = 'none';
+    [...logs].reverse().forEach(log => {
+      const tr = document.createElement('tr');
+      const moodColors = {
+        'Motivada': '#A8D8C8', 'Enfocada': '#A8C8D8',
+        'Ansiedad': '#D8B8D8', 'Irritabilidad': '#D8C8B8',
+        'Bajón': '#C8B8C8', 'SOS': '#FFB8B8'
+      };
+      const bg = moodColors[log.estado] || '#F0E8EC';
+      tr.innerHTML = `
+        <td>${fmtDate(log.fecha)}</td>
+        <td>${log.fase}</td>
+        <td><span class="mood-tag" style="background:${bg};color:rgba(0,0,0,0.6)">${log.estado}</span></td>
+        <td>${log.sueno}</td>
+        <td>${log.piel}</td>
+        <td>${log.flujo}</td>
+        <td>${log.deporte}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  buildCalendar(logs);
+}
+
+function buildCalendar(logs) {
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = '';
+  const days = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+  days.forEach(d => {
+    const h = document.createElement('div');
+    h.className = 'cal-header'; h.textContent = d;
+    grid.appendChild(h);
+  });
+
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const firstDay = new Date(year, month, 1);
+  let startOffset = firstDay.getDay() - 1;
+  if (startOffset < 0) startOffset = 6;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const today = now.getDate();
+
+  for (let i = 0; i < startOffset; i++) {
+    const el = document.createElement('div');
+    el.className = 'cal-day empty';
+    grid.appendChild(el);
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const log = logs.find(l => l.fecha === dateStr);
+    const el = document.createElement('div');
+    el.className = 'cal-day';
+    el.textContent = d;
+    if (d === today) el.classList.add('today');
+
+    if (log) {
+      const m = log.estado;
+      const sp = log.deporte;
+      const colors = MOOD_COLORS[m];
+      if (colors) el.style.background = colors[sp] || colors['Descanso'];
+      else if (m === 'SOS') el.style.background = '#FFB8B8';
+    }
+    grid.appendChild(el);
+  }
+}
+
+// ===== RESET =====
+document.getElementById('btn-reset').addEventListener('click', () => {
+  if (confirm('¿Segura que quieres borrar TODOS tus datos? Esta acción no se puede deshacer.')) {
+    localStorage.removeItem(LS_KEY);
+    localStorage.removeItem(LS_LOGS);
+    location.reload();
+  }
+});
+
+// ===== ATHLETE CHARACTER =====
+document.getElementById('athlete-char').addEventListener('click', function() {
+  this.classList.remove('bounce');
+  void this.offsetWidth;
+  this.classList.add('bounce');
+});
+
+// ===== FORTUNE TELLER =====
+document.getElementById('crystal-glow').addEventListener('click', () => {
+  try {
+    const chime = document.getElementById('sax-chime');
+    chime.currentTime = 0;
+    chime.volume = 0.3;
+    chime.play().catch(() => {});
+  } catch(e) {}
+  // Crystal pulse
+  const crystal = document.getElementById('crystal-glow');
+  crystal.style.filter = 'drop-shadow(0 0 20px rgba(200,180,255,0.9)) drop-shadow(0 0 40px rgba(160,140,255,0.6))';
+  setTimeout(() => { crystal.style.filter = ''; }, 800);
+});
+
+// ===== TOAST =====
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ===================================================
+// INIT
+// ===================================================
+(function init() {
+  // If user already exists, skip game and onboarding
+  const user = getUser();
+  if (user && user.nombre) {
+    document.getElementById('screen-welcome').classList.remove('active');
+    showScreen('screen-app');
+    initApp();
+    return;
+  }
+
+  // Otherwise start the game
+  try {
+    const music = document.getElementById('bg-music');
+    music.volume = 0.2;
+    music.play().catch(() => {});
+  } catch(e) {}
+  gameLoop();
+})();
 </script>
 </body>
 </html>
