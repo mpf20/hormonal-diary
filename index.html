@@ -1227,10 +1227,10 @@ const SPORT_ADVICE = {
 };
 
 const GREETINGS = {
-  'Menstrual': (n) => ({ h: `Descansa con honra, ${n}.`, s: 'Tu cuerpo hace un trabajo increíble. Hoy se trata de recuperación, no rendimiento.' }),
-  'Folicular': (n) => ({ h: `¡Con toda hoy, ${n}!`, s: 'Tus estrógenos van para arriba. Gran día para empujar pesado en fuerza.' }),
-  'Ovulación': (n) => ({ h: `Pico de poder, ${n}.`, s: 'Ovulación activa: tu energía y fuerza están en el máximo absoluto. ¡Es tu momento!' }),
-  'Lútea': (n) => ({ h: `Con cabeza fría, ${n}.`, s: 'Fase lútea: cuida las cargas, duerme bien, y no te juzgues si el ánimo fluctúa. Tu cuerpo trabaja en background.' })
+  'Menstrual': (n) => ({ h: `Tómatelo con calma hoy, ${n}.`, s: 'Si te sientes sin energía, baja el ritmo o descansa sin culpa. El cuerpo te lo va a agradecer.' }),
+  'Folicular': (n) => ({ h: `¡A darle con todo, ${n}!`, s: 'Tus estrógenos van para arriba. Gran día para meterle peso y entrenar duro.' }),
+  'Ovulación': (n) => ({ h: `Estás a tope hoy, ${n}.`, s: 'Energía y fuerza al máximo. Si te sientes bien, es el momento ideal para romper tus marcas.' }),
+  'Lútea': (n) => ({ h: `Baja un cambio, ${n}.`, s: 'Fase lútea: entrena tranquila, duerme bien y no te exijas de más si notas el cuerpo pesado.' })
 };
 
 const MOOD_COLORS = {
@@ -1352,21 +1352,22 @@ function drawDropOnCanvas(x, y, scale = 1) {
   ctx.beginPath(); ctx.ellipse(-7 * s, 76 * s, 9 * s, 4 * s, 0, 0, Math.PI * 2); ctx.fill();
   ctx.beginPath(); ctx.ellipse(7 * s, 76 * s, 9 * s, 4 * s, 0, 0, Math.PI * 2); ctx.fill();
 
-  // Arms
+// Arms (Coloca este bloque ANTES de dibujar la cabeza/rostro en tu código)
   ctx.fillStyle = '#C8303A';
-  // Brazo Izquierdo (Bajado a la cadera en 32*s y rotado hacia abajo/afuera en -0.8)
+  
+  // Brazo Izquierdo (Bajado más a 38*s y rotado más hacia abajo/afuera en -1.2)
   ctx.save(); 
-  ctx.translate(-22 * s, 32 * s); 
-  ctx.rotate(-0.8);
+  ctx.translate(-22 * s, 38 * s); // Bajado de 32 a 38
+  ctx.rotate(-1.2);               // Rotación más hacia abajo
   ctx.beginPath(); 
   ctx.roundRect(0, -4 * s, 18 * s, 7 * s, 3.5 * s); 
   ctx.fill(); 
   ctx.restore();
 
-  // Brazo Derecho (Bajado a la cadera en 32*s y rotado hacia abajo/afuera en 0.8)
+  // Brazo Derecho (Bajado más a 38*s y rotado más hacia abajo/afuera en 1.2)
   ctx.save(); 
-  ctx.translate(4 * s, 32 * s); 
-  ctx.rotate(0.8);
+  ctx.translate(4 * s, 38 * s);   // Bajado de 32 a 38
+  ctx.rotate(1.2);                // Rotación más hacia abajo
   ctx.beginPath(); 
   ctx.roundRect(0, -4 * s, 18 * s, 7 * s, 3.5 * s); 
   ctx.fill(); 
